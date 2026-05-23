@@ -18,9 +18,8 @@ export default function AdminLogin({ onLogin }: Props) {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     setTimeout(() => {
-      if (email === "admin@agrigo.com" && password === "Agri@123") {
+      if (email === "admin@agri" && password === "Agri@123") {
         onLogin();
       } else {
         setError("Invalid credentials. Please check your email and password.");
@@ -30,50 +29,40 @@ export default function AdminLogin({ onLogin }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1F17] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative background */}
+    <div className="min-h-screen bg-gradient-to-br from-[#F0F7F4] via-[#E8F5EE] to-[#F5F0E8] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Soft background shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#1B4332] rounded-full opacity-40 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#2D6A4F] rounded-full opacity-30 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1B4332]/10 rounded-full blur-3xl" />
-        {/* Grid lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#52B788" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        <div className="absolute -top-32 -right-32 w-80 h-80 bg-[#2D6A4F]/8 rounded-full blur-3xl" />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#D4A853]/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 right-1/4 w-48 h-48 bg-[#52B788]/8 rounded-full blur-2xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Card */}
-        <div className="bg-[#0F2318]/80 backdrop-blur-xl border border-[#2D6A4F]/30 rounded-3xl p-8 md:p-10 shadow-2xl">
+        <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl shadow-[#1B4332]/8 border border-[#1B4332]/8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#1B4332] rounded-2xl mb-4 shadow-lg ring-1 ring-[#52B788]/20">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-[#1B4332] rounded-2xl mb-4 shadow-md">
               <Leaf className="w-7 h-7 text-[#D4A853]" />
             </div>
             <h1
-              className="text-2xl font-bold text-white tracking-widest"
+              className="text-2xl font-bold text-[#1B4332] tracking-widest"
               style={{ fontFamily: "var(--font-playfair, Georgia, serif)" }}
             >
               AGRIGO
             </h1>
-            <p className="text-[#52B788]/70 text-sm mt-1 tracking-wide">Admin Control Panel</p>
+            <p className="text-[#6B8F71] text-sm mt-1">Admin Control Panel</p>
           </div>
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-[#2D6A4F]/30" />
-            <Lock className="w-3.5 h-3.5 text-[#52B788]/40" />
-            <div className="flex-1 h-px bg-[#2D6A4F]/30" />
+            <div className="flex-1 h-px bg-[#E2EDE6]" />
+            <Lock className="w-3.5 h-3.5 text-[#A0BEA8]" />
+            <div className="flex-1 h-px bg-[#E2EDE6]" />
           </div>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2.5 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-5 text-red-400 text-sm">
+            <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5 text-red-600 text-sm">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -81,54 +70,51 @@ export default function AdminLogin({ onLogin }: Props) {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-[#52B788]/70 mb-2 tracking-widest uppercase">
+              <label className="block text-xs font-semibold text-[#4A7C59] mb-2 tracking-widest uppercase">
                 Admin Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52B788]/40" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0BEA8]" />
                 <input
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@agrigo .com"
+                  placeholder="admin@agri"
                   required
-                  className="w-full pl-11 pr-4 py-3.5 bg-[#1B4332]/30 border border-[#2D6A4F]/30 rounded-xl text-white placeholder-[#52B788]/30 text-sm focus:outline-none focus:border-[#52B788]/60 focus:ring-2 focus:ring-[#52B788]/10 transition-all"
+                  className="w-full pl-11 pr-4 py-3.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-xl text-[#1C1C1C] placeholder-[#A0BEA8] text-sm focus:outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#2D6A4F]/10 transition-all"
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-[#52B788]/70 mb-2 tracking-widest uppercase">
+              <label className="block text-xs font-semibold text-[#4A7C59] mb-2 tracking-widest uppercase">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52B788]/40" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0BEA8]" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-11 pr-12 py-3.5 bg-[#1B4332]/30 border border-[#2D6A4F]/30 rounded-xl text-white placeholder-[#52B788]/30 text-sm focus:outline-none focus:border-[#52B788]/60 focus:ring-2 focus:ring-[#52B788]/10 transition-all"
+                  className="w-full pl-11 pr-12 py-3.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-xl text-[#1C1C1C] placeholder-[#A0BEA8] text-sm focus:outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#2D6A4F]/10 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#52B788]/40 hover:text-[#52B788] transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A0BEA8] hover:text-[#2D6A4F] transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#1B4332] hover:bg-[#2D6A4F] text-white font-semibold rounded-xl transition-all text-sm tracking-wide flex items-center justify-center gap-2.5 mt-2 disabled:opacity-60 border border-[#52B788]/20 shadow-lg"
+              className="w-full py-3.5 bg-[#1B4332] hover:bg-[#2D6A4F] text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2.5 mt-2 disabled:opacity-60 shadow-md shadow-[#1B4332]/20"
             >
               {loading ? (
                 <>
@@ -147,7 +133,7 @@ export default function AdminLogin({ onLogin }: Props) {
             </button>
           </form>
 
-          <p className="text-center text-xs text-[#52B788]/30 mt-6">
+          <p className="text-center text-xs text-[#A0BEA8] mt-6">
             Protected area — AGRIGO internal use only
           </p>
         </div>

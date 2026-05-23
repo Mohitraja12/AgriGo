@@ -187,7 +187,7 @@ export default function SocialImpactEditor() {
                 </Field>
               </TwoCol>
               {entry.imageUrl && (
-                <img src={entry.imageUrl} alt="" className="w-full h-28 object-cover rounded-lg border border-[#2D6A4F]/20" />
+                <img src={entry.imageUrl} alt="" className="w-full h-28 object-cover rounded-lg border border-[#E2EDE6]" />
               )}
             </ItemCard>
           ))}

@@ -1,191 +1,161 @@
 "use client";
 
 import { useState } from "react";
-import { Phone } from "lucide-react";
+import { Image as ImageIcon, Grid, Tag } from "lucide-react";
 import {
   EditorSection,
   Field,
   TextInput,
-  Textarea,
   TwoCol,
   ItemCard,
   AddButton,
   EditorPageHeader,
 } from "./AdminUI";
 
-export default function ContactEditor() {
-  const [pageHeading, setPageHeading] = useState("Let's Start a Conversation");
+const categoryOptions = ["Farming", "Community", "Events", "Nature", "Awards"];
+
+export default function GalleryEditor() {
+  const [pageHeading, setPageHeading] = useState("Our Work in Pictures");
   const [pageSubtitle, setPageSubtitle] = useState(
-    "Whether you're a farmer needing help, a partner wanting to collaborate, or a donor ready to make a difference — we're here and we're listening."
+    "A curated visual journey through the farms, villages, events, and lives that AGRIGO has touched over a decade of work."
   );
 
-  const [offices, setOffices] = useState([
-    {
-      name: "Headquarters — Punjab",
-      address: "AGRIGO Organisation, Block C, Krishi Nagar, Sector 12, Ludhiana, Punjab — 141001",
-      phone: "+91 98765 43210",
-      email: "info@agrigo.org",
-      hours: "Mon – Sat: 9:00 AM – 6:00 PM",
-    },
-    {
-      name: "Field Office — Haryana",
-      address: "Village Panchayat Bhawan, NH-44 Bypass, Ambala, Haryana — 134003",
-      phone: "+91 98765 43211",
-      email: "haryana@agrigo.org",
-      hours: "Mon – Fri: 9:00 AM – 5:00 PM",
-    },
+  const [images, setImages] = useState([
+    { src: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80&fit=crop", caption: "Wheat fields of Punjab at golden hour", category: "Farming" },
+    { src: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop", caption: "Organic training workshop in Ludhiana", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=800&q=80&fit=crop", caption: "Harvest season celebration, 2023", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop", caption: "Water harvesting pond in Haryana", category: "Nature" },
+    { src: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&q=80&fit=crop", caption: "Mountain farming outreach — Himachal", category: "Farming" },
+    { src: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop", caption: "National Rural Excellence Award ceremony", category: "Awards" },
+    { src: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop", caption: "Women's cooperative orientation session", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop", caption: "Tree plantation drive — 2.1 million trees", category: "Nature" },
+    { src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop", caption: "AgriTech digital kiosk installation", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=800&q=80&fit=crop", caption: "Village community dialogue session", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80&fit=crop", caption: "Annual volunteer summit — New Delhi", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&fit=crop", caption: "Agricultural research field visit", category: "Farming" },
   ]);
 
-  const [departments, setDepartments] = useState([
-    { label: "General Enquiries", email: "info@agrigo.org" },
-    { label: "Farmer Support", email: "support@agrigo.org" },
-    { label: "Partnerships & CSR", email: "partners@agrigo.org" },
-    { label: "Media & Press", email: "media@agrigo.org" },
-  ]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const [subjects, setSubjects] = useState([
-    "General Enquiry",
-    "Farmer Support",
-    "Volunteer / Internship",
-    "Corporate Partnership / CSR",
-    "Media & Press",
-    "Donation / Funding",
-    "Other",
-  ]);
-
-  const [social, setSocial] = useState([
-    { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
-    { platform: "Instagram", handle: "@agrigo.in", url: "#" },
-    { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
-    { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
-  ]);
-
-  const updateOffice = (i: number, key: string, val: string) =>
-    setOffices((p) => p.map((o, idx) => (idx === i ? { ...o, [key]: val } : o)));
-  const addOffice = () =>
-    setOffices((p) => [...p, { name: "New Office", address: "", phone: "", email: "", hours: "Mon – Fri: 9:00 AM – 5:00 PM" }]);
-  const removeOffice = (i: number) => setOffices((p) => p.filter((_, idx) => idx !== i));
-
-  const updateDept = (i: number, key: string, val: string) =>
-    setDepartments((p) => p.map((d, idx) => (idx === i ? { ...d, [key]: val } : d)));
-  const addDept = () => setDepartments((p) => [...p, { label: "New Department", email: "dept@agrigo.org" }]);
-  const removeDept = (i: number) => setDepartments((p) => p.filter((_, idx) => idx !== i));
-
-  const updateSubject = (i: number, val: string) =>
-    setSubjects((p) => p.map((s, idx) => (idx === i ? val : s)));
-  const addSubject = () => setSubjects((p) => [...p, "New Subject"]);
-  const removeSubject = (i: number) => setSubjects((p) => p.filter((_, idx) => idx !== i));
-
-  const updateSocial = (i: number, key: string, val: string) =>
-    setSocial((p) => p.map((s, idx) => (idx === i ? { ...s, [key]: val } : s)));
-  const addSocial = () => setSocial((p) => [...p, { platform: "Platform", handle: "@handle", url: "#" }]);
-  const removeSocial = (i: number) => setSocial((p) => p.filter((_, idx) => idx !== i));
+  const updateImage = (i: number, key: string, val: string) =>
+    setImages((p) => p.map((img, idx) => (idx === i ? { ...img, [key]: val } : img)));
+  const addImage = () =>
+    setImages((p) => [...p, { src: "", caption: "New Image", category: "Farming" }]);
+  const removeImage = (i: number) => setImages((p) => p.filter((_, idx) => idx !== i));
 
   return (
     <div>
       <EditorPageHeader
-        icon={Phone}
-        title="Contact Page Editor"
-        description="Edit office details, department emails, social links, and contact form dropdown subjects."
+        icon={ImageIcon}
+        title="Gallery Page Editor"
+        description="Manage all photo gallery images — add, remove, update captions and categories."
       />
 
       {/* Page Header */}
       <EditorSection title="Page Header">
-        <Field label="Main Heading">
+        <Field label="Page Heading">
           <TextInput value={pageHeading} onChange={setPageHeading} />
         </Field>
         <Field label="Subtitle">
-          <Textarea value={pageSubtitle} onChange={setPageSubtitle} rows={2} />
+          <TextInput value={pageSubtitle} onChange={setPageSubtitle} />
         </Field>
       </EditorSection>
 
-      {/* Offices */}
-      <EditorSection title="Office Locations" subtitle="Physical address cards shown on the left column">
-        <div className="space-y-4">
-          {offices.map((office, i) => (
-            <ItemCard key={i} index={i} total={offices.length} onRemove={() => removeOffice(i)} label="Office">
-              <Field label="Office Name">
-                <TextInput value={office.name} onChange={(v) => updateOffice(i, "name", v)} placeholder="Headquarters — Punjab" />
-              </Field>
-              <Field label="Full Address">
-                <Textarea value={office.address} onChange={(v) => updateOffice(i, "address", v)} rows={2} />
-              </Field>
-              <TwoCol>
-                <Field label="Phone Number">
-                  <TextInput value={office.phone} onChange={(v) => updateOffice(i, "phone", v)} placeholder="+91 98765 43210" />
-                </Field>
-                <Field label="Email Address">
-                  <TextInput value={office.email} onChange={(v) => updateOffice(i, "email", v)} placeholder="office@agrigo.org" />
-                </Field>
-              </TwoCol>
-              <Field label="Working Hours">
-                <TextInput value={office.hours} onChange={(v) => updateOffice(i, "hours", v)} placeholder="Mon – Sat: 9:00 AM – 6:00 PM" />
-              </Field>
-            </ItemCard>
-          ))}
-          <AddButton onClick={addOffice} label="Add Office" />
+      {/* Images */}
+      <EditorSection
+        title={`Gallery Images (${images.length})`}
+        subtitle="Each image appears as a card in the responsive grid. Click to zoom is built-in."
+      >
+        {/* View Toggle */}
+        <div className="flex items-center gap-2 mb-2">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              viewMode === "grid" ? "bg-[#1B4332] text-white" : "text-[#6B8F71] hover:text-[#2D6A4F]"
+            }`}
+          >
+            <Grid className="w-3.5 h-3.5" /> Grid Preview
+          </button>
+          <button
+            onClick={() => setViewMode("list")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              viewMode === "list" ? "bg-[#1B4332] text-white" : "text-[#6B8F71] hover:text-[#2D6A4F]"
+            }`}
+          >
+            <Tag className="w-3.5 h-3.5" /> List Edit
+          </button>
         </div>
-      </EditorSection>
 
-      {/* Department Emails */}
-      <EditorSection title="Department Emails" subtitle="The email table shown below the office cards">
-        <div className="space-y-3">
-          {departments.map((dept, i) => (
-            <ItemCard key={i} index={i} total={departments.length} onRemove={() => removeDept(i)} label="Department">
-              <TwoCol>
-                <Field label="Department Name">
-                  <TextInput value={dept.label} onChange={(v) => updateDept(i, "label", v)} placeholder="Farmer Support" />
-                </Field>
-                <Field label="Email Address">
-                  <TextInput value={dept.email} onChange={(v) => updateDept(i, "email", v)} placeholder="dept@agrigo.org" />
-                </Field>
-              </TwoCol>
-            </ItemCard>
-          ))}
-          <AddButton onClick={addDept} label="Add Department" />
-        </div>
-      </EditorSection>
-
-      {/* Contact Form Subjects */}
-      <EditorSection title="Contact Form — Subject Options" subtitle="Dropdown options in the contact form's Subject field">
-        <div className="space-y-2">
-          {subjects.map((subject, i) => (
-            <div key={i} className="flex gap-2">
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => updateSubject(i, e.target.value)}
-                className="flex-1 px-3.5 py-2 bg-[#0A1A10] border border-[#2D6A4F]/25 rounded-lg text-white text-sm focus:outline-none focus:border-[#52B788]/50 transition-all"
-              />
-              {subjects.length > 1 && (
-                <button onClick={() => removeSubject(i)} className="text-red-500/40 hover:text-red-400 px-2 text-sm">✕</button>
-              )}
+        {viewMode === "grid" ? (
+          /* Grid Preview Mode */
+          <div>
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mb-4">
+              {images.map((img, i) => (
+                <div key={i} className="relative group rounded-lg overflow-hidden aspect-square bg-[#EDF5EF]">
+                  {img.src ? (
+                    <img src={img.src} alt={img.caption} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[#A0BEA8]">
+                      <ImageIcon className="w-6 h-6" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                    <p className="text-white text-[9px] leading-tight line-clamp-2">{img.caption}</p>
+                    <span className="text-[#D4A853] text-[8px] mt-0.5">{img.category}</span>
+                  </div>
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-500/80 rounded-full flex items-center justify-center text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-          <AddButton onClick={addSubject} label="Add Subject Option" />
-        </div>
-      </EditorSection>
-
-      {/* Social Links */}
-      <EditorSection title="Social Media Links" subtitle="Follow Us section in the left column of the Contact page (also used in Footer)">
-        <div className="space-y-3">
-          {social.map((s, i) => (
-            <ItemCard key={i} index={i} total={social.length} onRemove={() => removeSocial(i)} label="Social">
-              <div className="grid grid-cols-3 gap-3">
-                <Field label="Platform">
-                  <TextInput value={s.platform} onChange={(v) => updateSocial(i, "platform", v)} placeholder="Instagram" />
-                </Field>
-                <Field label="Handle">
-                  <TextInput value={s.handle} onChange={(v) => updateSocial(i, "handle", v)} placeholder="@agrigo.in" />
-                </Field>
-                <Field label="Profile URL">
-                  <TextInput value={s.url} onChange={(v) => updateSocial(i, "url", v)} placeholder="https://instagram.com/..." />
-                </Field>
-              </div>
-            </ItemCard>
-          ))}
-          <AddButton onClick={addSocial} label="Add Social Link" />
-        </div>
+            <AddButton onClick={addImage} label="Add Image" />
+          </div>
+        ) : (
+          /* List Edit Mode */
+          <div className="space-y-3">
+            {images.map((img, i) => (
+              <ItemCard key={i} index={i} total={images.length} onRemove={() => removeImage(i)} label={`Photo ${i + 1}`}>
+                <div className="flex gap-3">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#EDF5EF] shrink-0">
+                    {img.src ? (
+                      <img src={img.src} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#A0BEA8]">
+                        <ImageIcon className="w-5 h-5" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Field label="Image URL">
+                      <TextInput value={img.src} onChange={(v) => updateImage(i, "src", v)} placeholder="https://images.unsplash.com/..." />
+                    </Field>
+                  </div>
+                </div>
+                <TwoCol>
+                  <Field label="Caption">
+                    <TextInput value={img.caption} onChange={(v) => updateImage(i, "caption", v)} placeholder="Image caption..." />
+                  </Field>
+                  <Field label="Category">
+                    <select
+                      value={img.category}
+                      onChange={(e) => updateImage(i, "category", e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-lg text-[#1B4332] text-sm focus:outline-none focus:border-[#2D6A4F] transition-all appearance-none"
+                    >
+                      {categoryOptions.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </Field>
+                </TwoCol>
+              </ItemCard>
+            ))}
+            <AddButton onClick={addImage} label="Add Image" />
+          </div>
+        )}
       </EditorSection>
     </div>
   );

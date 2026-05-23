@@ -226,7 +226,7 @@ export default function SiteSettingsEditor() {
         </Field>
         <Field label="Meta Description" hint="Keep under 160 characters for best SEO results">
           <Textarea value={metaDescription} onChange={setMetaDescription} rows={3} />
-          <p className={`text-[10px] mt-1 ${metaDescription.length > 160 ? "text-red-400" : "text-[#52B788]/30"}`}>
+          <p className={`text-[10px] mt-1 ${metaDescription.length > 160 ? "text-red-400" : "text-[#A0BEA8]"}`}>
             {metaDescription.length}/160 characters
           </p>
         </Field>

@@ -126,7 +126,7 @@ export default function AboutEditor() {
                   type="text"
                   value={b}
                   onChange={(e) => updateBullet(i, e.target.value)}
-                  className="flex-1 px-3.5 py-2 bg-[#0A1A10] border border-[#2D6A4F]/25 rounded-lg text-white text-sm placeholder-[#52B788]/25 focus:outline-none focus:border-[#52B788]/50 transition-all"
+                  className="flex-1 px-3.5 py-2 bg-[#F7FAF8] border border-[#D0E6D8] rounded-lg text-[#1B4332] text-sm placeholder-[#A0BEA8] focus:outline-none focus:border-[#2D6A4F] transition-all"
                 />
                 {missionBullets.length > 1 && (
                   <button onClick={() => removeBullet(i)} className="text-red-500/40 hover:text-red-400 px-2">✕</button>
@@ -204,7 +204,7 @@ export default function AboutEditor() {
                 <TextInput value={member.imageUrl} onChange={(v) => updateTeam(i, "imageUrl", v)} placeholder="https://images.unsplash.com/..." />
               </Field>
               {member.imageUrl && (
-                <img src={member.imageUrl} alt={member.name} className="w-16 h-16 rounded-xl object-cover mt-1 border border-[#2D6A4F]/20" />
+                <img src={member.imageUrl} alt={member.name} className="w-16 h-16 rounded-xl object-cover mt-1 border border-[#E2EDE6]" />
               )}
             </ItemCard>
           ))}

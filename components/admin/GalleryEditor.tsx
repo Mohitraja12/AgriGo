@@ -71,7 +71,7 @@ export default function GalleryEditor() {
           <button
             onClick={() => setViewMode("grid")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              viewMode === "grid" ? "bg-[#1B4332] text-white" : "text-[#52B788]/50 hover:text-[#52B788]"
+              viewMode === "grid" ? "bg-[#1B4332] text-white" : "text-[#6B8F71] hover:text-[#2D6A4F]"
             }`}
           >
             <Grid className="w-3.5 h-3.5" /> Grid Preview
@@ -79,7 +79,7 @@ export default function GalleryEditor() {
           <button
             onClick={() => setViewMode("list")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              viewMode === "list" ? "bg-[#1B4332] text-white" : "text-[#52B788]/50 hover:text-[#52B788]"
+              viewMode === "list" ? "bg-[#1B4332] text-white" : "text-[#6B8F71] hover:text-[#2D6A4F]"
             }`}
           >
             <Tag className="w-3.5 h-3.5" /> List Edit
@@ -91,11 +91,11 @@ export default function GalleryEditor() {
           <div>
             <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mb-4">
               {images.map((img, i) => (
-                <div key={i} className="relative group rounded-lg overflow-hidden aspect-square bg-[#1B4332]/20">
+                <div key={i} className="relative group rounded-lg overflow-hidden aspect-square bg-[#EDF5EF]">
                   {img.src ? (
                     <img src={img.src} alt={img.caption} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#52B788]/20">
+                    <div className="w-full h-full flex items-center justify-center text-[#A0BEA8]">
                       <ImageIcon className="w-6 h-6" />
                     </div>
                   )}
@@ -120,11 +120,11 @@ export default function GalleryEditor() {
             {images.map((img, i) => (
               <ItemCard key={i} index={i} total={images.length} onRemove={() => removeImage(i)} label={`Photo ${i + 1}`}>
                 <div className="flex gap-3">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#1B4332]/20 shrink-0">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#EDF5EF] shrink-0">
                     {img.src ? (
                       <img src={img.src} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#52B788]/20">
+                      <div className="w-full h-full flex items-center justify-center text-[#A0BEA8]">
                         <ImageIcon className="w-5 h-5" />
                       </div>
                     )}
@@ -143,7 +143,7 @@ export default function GalleryEditor() {
                     <select
                       value={img.category}
                       onChange={(e) => updateImage(i, "category", e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#0A1A10] border border-[#2D6A4F]/25 rounded-lg text-white text-sm focus:outline-none focus:border-[#52B788]/50 transition-all appearance-none"
+                      className="w-full px-3.5 py-2.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-lg text-[#1B4332] text-sm focus:outline-none focus:border-[#2D6A4F] transition-all appearance-none"
                     >
                       {categoryOptions.map((c) => (
                         <option key={c} value={c}>{c}</option>
