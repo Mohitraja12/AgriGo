@@ -177,7 +177,7 @@ export default function ScrollyTantraPage() {
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
   // ── RAF animation loop ────────────────────────────────────────────────────
-  const animate = useCallback(() => {
+  function animate() {
     const s = animState.current;
     const tgt = targetState.current;
 
@@ -193,7 +193,7 @@ export default function ScrollyTantraPage() {
     }
 
     rafRef.current = requestAnimationFrame(animate);
-  }, []);
+  }
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(animate);

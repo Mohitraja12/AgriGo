@@ -1,7 +1,9 @@
+// components/admin/AdminLogin.tsx
 "use client";
 
 import { useState } from "react";
 import { Leaf, Eye, EyeOff, AlertCircle, Lock, Mail } from "lucide-react";
+import { signIn } from "@/lib/firebase/auth";
 
 interface Props {
   onLogin: () => void;
@@ -14,18 +16,30 @@ export default function AdminLogin({ onLogin }: Props) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    setTimeout(() => {
-      if (email === "admin@agri" && password === "Agri@123") {
-        onLogin();
+
+    try {
+      await signIn({ email, password });
+      onLogin();
+    } catch (err: unknown) {
+      console.error("Login error:", err);
+      const code = typeof err === "object" && err !== null && "code" in err ? String((err as { code?: string }).code) : "";
+      if (code === "auth/user-not-found") {
+        setError("No account found with this email address.");
+      } else if (code === "auth/wrong-password") {
+        setError("Incorrect password. Please try again.");
+      } else if (code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many failed attempts. Please try again later.");
       } else {
         setError("Invalid credentials. Please check your email and password.");
-        setLoading(false);
       }
-    }, 900);
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,10 +91,10 @@ export default function AdminLogin({ onLogin }: Props) {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0BEA8]" />
                 <input
-                  type="text"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@agri"
+                  placeholder="admin@agrigo.org"
                   required
                   className="w-full pl-11 pr-4 py-3.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-xl text-[#1C1C1C] placeholder-[#A0BEA8] text-sm focus:outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#2D6A4F]/10 transition-all"
                 />

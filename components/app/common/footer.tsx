@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Leaf, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import { getSiteSettings, type SiteSettingsData } from "@/lib/firebase/firestore";
 
 const socialBadgeClasses: Record<string, string> = {
   Facebook: "f",
@@ -17,15 +21,59 @@ const quickLinks = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-const socialLinks = [
-  { label: "Facebook", href: "#", handle: "@AgrigoOfficial" },
-  { label: "Instagram", href: "#", handle: "@agrigo.in" },
-  { label: "Twitter / X", href: "#", handle: "@AgrigoIndia" },
-  { label: "LinkedIn", href: "#", handle: "AGRIGO Org" },
-  { label: "YouTube", href: "#", handle: "AGRIGO Channel" },
-];
+const defaultSiteSettings: SiteSettingsData = {
+  orgName: "AGRIGO",
+  orgTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures.",
+  orgEstYear: "2015",
+  orgEmail: "info@agrigo.org",
+  orgPhone: "+91 12345 67890",
+  navLinks: quickLinks,
+  footerTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.",
+  footerAddress: "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
+  footerPhone1: "+91 12345 67890",
+  footerPhone2: "+91 12345 67891",
+  footerEmail1: "info@agrigo.org",
+  footerEmail2: "support@agrigo.org",
+  footerSocial: [
+    { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
+    { platform: "Instagram", handle: "@agrigo.in", url: "#" },
+    { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
+    { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
+    { platform: "YouTube", handle: "AGRIGO Channel", url: "#" },
+  ],
+  legalLinks: [
+    { label: "Privacy Policy", href: "#" },
+    { label: "Terms of Use", href: "#" },
+    { label: "Sitemap", href: "#" },
+  ],
+  footerCtaHeading: "Ready to make an impact together?",
+  footerCtaSubtitle: "Partner with AGRIGO to transform agriculture and empower communities.",
+  siteTitle: "AGRIGO — Agriculture, Community & Social Impact",
+  metaDescription: "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+};
 
 export default function Footer() {
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsData>(defaultSiteSettings);
+
+  useEffect(() => {
+    const loadSiteSettings = async () => {
+      try {
+        const settings = await getSiteSettings();
+        if (settings?.data) {
+          setSiteSettings(settings.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading site settings:", error);
+      }
+    };
+
+    loadSiteSettings();
+  }, []);
+
+  const socialLinks = siteSettings.footerSocial.length > 0 ? siteSettings.footerSocial : defaultSiteSettings.footerSocial;
+  const legalLinks = siteSettings.legalLinks.length > 0 ? siteSettings.legalLinks : defaultSiteSettings.legalLinks;
+  const footerAddressLines = siteSettings.footerAddress.split("\n");
+
   return (
     <footer className="bg-[#1B4332] text-[#F7F4EE]">
       {/* Top CTA Strip */}
@@ -33,10 +81,10 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <p className="text-lg font-semibold" style={{ fontFamily: "var(--font-playfair)" }}>
-              Ready to make an impact together?
+              {siteSettings.footerCtaHeading}
             </p>
             <p className="text-sm text-[#F7F4EE]/60 mt-0.5">
-              Partner with AGRIGO to transform agriculture and empower communities.
+              {siteSettings.footerCtaSubtitle}
             </p>
           </div>
           <Link
@@ -64,11 +112,11 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-sm text-[#F7F4EE]/60 leading-relaxed">
-            Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.
+            {siteSettings.footerTagline}
           </p>
           <div className="mt-6 flex items-center gap-1 text-xs text-[#D4A853] font-medium tracking-widest uppercase">
             <span className="w-6 h-px bg-[#D4A853]" />
-            Est. 2015
+            Est. {siteSettings.orgEstYear}
           </div>
         </div>
 
@@ -83,23 +131,26 @@ export default function Footer() {
             <li className="flex gap-3 text-sm text-[#F7F4EE]/70">
               <MapPin className="w-4 h-4 text-[#52B788] mt-0.5 shrink-0" />
               <span>
-                AGRIGO Organisation,<br />
-                Sector 12, Krishi Nagar,<br />
-                Punjab — 143001, India
+                {footerAddressLines.map((line, index) => (
+                  <span key={index}>
+                    {line}
+                    {index < footerAddressLines.length - 1 && <br />}
+                  </span>
+                ))}
               </span>
             </li>
             <li className="flex gap-3 text-sm text-[#F7F4EE]/70">
               <Phone className="w-4 h-4 text-[#52B788] mt-0.5 shrink-0" />
               <div className="flex flex-col gap-1">
-                <a href="tel:+911234567890" className="hover:text-[#F7F4EE] transition-colors">+91 12345 67890</a>
-                <a href="tel:+911234567891" className="hover:text-[#F7F4EE] transition-colors">+91 12345 67891</a>
+                <a href={`tel:${siteSettings.footerPhone1.replace(/\s/g, "")}`} className="hover:text-[#F7F4EE] transition-colors">{siteSettings.footerPhone1}</a>
+                <a href={`tel:${siteSettings.footerPhone2.replace(/\s/g, "")}`} className="hover:text-[#F7F4EE] transition-colors">{siteSettings.footerPhone2}</a>
               </div>
             </li>
             <li className="flex gap-3 text-sm text-[#F7F4EE]/70">
               <Mail className="w-4 h-4 text-[#52B788] mt-0.5 shrink-0" />
               <div className="flex flex-col gap-1">
-                <a href="mailto:info@agrigo.org" className="hover:text-[#F7F4EE] transition-colors">info@agrigo.org</a>
-                <a href="mailto:support@agrigo.org" className="hover:text-[#F7F4EE] transition-colors">support@agrigo.org</a>
+                <a href={`mailto:${siteSettings.footerEmail1}`} className="hover:text-[#F7F4EE] transition-colors">{siteSettings.footerEmail1}</a>
+                <a href={`mailto:${siteSettings.footerEmail2}`} className="hover:text-[#F7F4EE] transition-colors">{siteSettings.footerEmail2}</a>
               </div>
             </li>
           </ul>
@@ -131,19 +182,19 @@ export default function Footer() {
             Follow Us
           </h4>
           <ul className="space-y-3">
-            {socialLinks.map((social) => (
-              <li key={social.label}>
+            {socialLinks.map((social, index) => (
+              <li key={`${social.platform}-${social.url}-${index}`}>
                 <a
-                  href={social.href}
+                  href={social.url}
                   className="group flex items-center gap-3 text-sm text-[#F7F4EE]/60 hover:text-[#F7F4EE] transition-colors"
                 >
                   <span className="w-7 h-7 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-[#52B788]/30 transition-colors">
                     <span className="text-[10px] font-semibold uppercase leading-none text-[#F7F4EE]">
-                      {socialBadgeClasses[social.label] ?? social.label.slice(0, 2)}
+                      {socialBadgeClasses[social.platform] ?? (social.platform?.slice(0, 2) ?? "")}
                     </span>
                   </span>
                   <span className="flex flex-col leading-tight">
-                    <span className="text-xs text-[#F7F4EE]/40">{social.label}</span>
+                    <span className="text-xs text-[#F7F4EE]/40">{social.platform}</span>
                     <span>{social.handle}</span>
                   </span>
                 </a>
@@ -157,9 +208,9 @@ export default function Footer() {
       <div className="border-t border-white/10 max-w-7xl mx-auto px-6 lg:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#F7F4EE]/40">
         <p>© {new Date().getFullYear()} AGRIGO Organisation. All Rights Reserved.</p>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-[#F7F4EE] transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-[#F7F4EE] transition-colors">Terms of Use</a>
-          <a href="#" className="hover:text-[#F7F4EE] transition-colors">Sitemap</a>
+          {legalLinks.map((link) => (
+            <a key={link.label} href={link.href} className="hover:text-[#F7F4EE] transition-colors">{link.label}</a>
+          ))}
         </div>
       </div>
     </footer>

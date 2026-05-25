@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   MapPin,
   Phone,
@@ -10,6 +11,8 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import { getContactContent, type ContactData } from "@/lib/firebase/firestore";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 const socialBadgeClasses: Record<string, string> = {
   Facebook: "f",
@@ -52,7 +55,42 @@ const subjects = [
   "Other",
 ];
 
+const defaultContactContent: ContactData = {
+  pageHeading: "Let's Start a Conversation",
+  pageSubtitle: "Whether you're a farmer needing help, a partner wanting to collaborate, or a donor ready to make a difference — we're here and we're listening.",
+  offices: [
+    {
+      name: "Headquarters — Punjab",
+      address: "AGRIGO Organisation, Block C, Krishi Nagar, Sector 12, Ludhiana, Punjab — 141001",
+      phone: "+91 98765 43210",
+      email: "info@agrigo.org",
+      hours: "Mon – Sat: 9:00 AM – 6:00 PM",
+    },
+    {
+      name: "Field Office — Haryana",
+      address: "Village Panchayat Bhawan, NH-44 Bypass, Ambala, Haryana — 134003",
+      phone: "+91 98765 43211",
+      email: "haryana@agrigo.org",
+      hours: "Mon – Fri: 9:00 AM – 5:00 PM",
+    },
+  ],
+  departments: [
+    { label: "General Enquiries", email: "info@agrigo.org" },
+    { label: "Farmer Support", email: "support@agrigo.org" },
+    { label: "Partnerships & CSR", email: "partners@agrigo.org" },
+    { label: "Media & Press", email: "media@agrigo.org" },
+  ],
+  socialLinks: [
+    { label: "Facebook", url: "#" },
+    { label: "Instagram", url: "#" },
+    { label: "Twitter", url: "#" },
+    { label: "LinkedIn", url: "#" },
+  ],
+};
+
 export default function ContactPage() {
+  const [content, setContent] = useState<ContactData>(defaultContactContent);
+  const [loading, setLoading] = useState<boolean>(true);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -61,7 +99,35 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const contactContent = await getContactContent();
+        if (contactContent?.data) {
+          setContent(contactContent.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading contact content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContent();
+  }, []);
+
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.5, delay },
+  });
+
+  if (loading) {
+    return <LoadingSkeleton variant="contact" />;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -71,9 +137,9 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     setTimeout(() => {
-      setLoading(false);
+      setIsSubmitting(false);
       setSubmitted(true);
     }, 1800);
   };
@@ -101,10 +167,10 @@ export default function ContactPage() {
             className="text-5xl md:text-6xl font-bold text-[#F7F4EE] leading-tight max-w-xl"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Let's Start a Conversation
+            {content.pageHeading}
           </h1>
           <p className="mt-4 text-[#F7F4EE]/65 max-w-lg leading-relaxed">
-            Whether you're a farmer needing help, a partner wanting to collaborate, or a donor ready to make a difference — we're here and we're listening.
+            {content.pageSubtitle}
           </p>
         </div>
       </section>
@@ -123,9 +189,10 @@ export default function ContactPage() {
                 Our Offices
               </h2>
               <div className="space-y-5">
-                {offices.map((office) => (
-                  <div
+                {content.offices.map((office) => (
+                  <motion.div
                     key={office.name}
+                    {...fadeUp()}
                     className="bg-white rounded-2xl p-6 border border-[#1B4332]/10 hover:border-[#1B4332]/20 transition-colors"
                   >
                     <h3
@@ -156,7 +223,7 @@ export default function ContactPage() {
                         <span>{office.hours}</span>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -170,8 +237,8 @@ export default function ContactPage() {
                 Department Emails
               </h2>
               <div className="bg-[#EDE8DC] rounded-2xl p-5 space-y-3">
-                {departments.map((d) => (
-                  <div key={d.label} className="flex items-center justify-between gap-4">
+                {content.departments.map((d) => (
+                  <motion.div key={d.label} {...fadeUp()} className="flex items-center justify-between gap-4">
                     <span className="text-sm text-[#6B6B5E]">{d.label}</span>
                     <a
                       href={`mailto:${d.email}`}
@@ -180,7 +247,7 @@ export default function ContactPage() {
                       {d.email}
                       <ArrowRight className="w-3 h-3" />
                     </a>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -194,29 +261,25 @@ export default function ContactPage() {
                 Follow Our Work
               </h2>
               <div className="flex gap-3 flex-wrap">
-                {[
-                  { label: "Facebook", href: "#" },
-                  { label: "Instagram", href: "#" },
-                  { label: "Twitter", href: "#" },
-                  { label: "LinkedIn", href: "#" },
-                ].map((s) => (
-                  <a
+                {content.socialLinks.map((s) => (
+                  <motion.a
                     key={s.label}
-                    href={s.href}
+                    {...fadeUp()}
+                    href={s.url}
                     className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#1B4332]/10 rounded-xl text-sm text-[#1B4332] font-medium hover:bg-[#1B4332] hover:text-[#F7F4EE] hover:border-transparent transition-all group"
                   >
                     <span className="w-4 h-4 rounded-full bg-[#1B4332]/10 text-[9px] font-semibold uppercase leading-none flex items-center justify-center group-hover:bg-[#F7F4EE]/15">
                       {socialBadgeClasses[s.label] ?? s.label.slice(0, 2)}
                     </span>
                     {s.label}
-                  </a>
+                  </motion.a>
                 ))}
               </div>
             </div>
           </div>
 
           {/* ── RIGHT: Contact Form ── */}
-          <div className="lg:col-span-3">
+          <motion.div {...fadeUp(0.08)} className="lg:col-span-3">
             <div className="bg-white rounded-3xl p-8 md:p-10 border border-[#1B4332]/10 shadow-sm">
               {submitted ? (
                 <div className="text-center py-16">
@@ -248,7 +311,7 @@ export default function ContactPage() {
                     Send Us a Message
                   </h2>
                   <p className="text-sm text-[#6B6B5E] mb-8">
-                    Fill in the form below and we'll get back to you as soon as possible.
+                    Fill in the form below and we&apos;ll get back to you as soon as possible.
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
@@ -362,7 +425,7 @@ export default function ContactPage() {
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

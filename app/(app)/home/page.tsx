@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -13,79 +14,98 @@ import {
   TreePine,
   Star,
 } from "lucide-react";
+import { getHomepageContent, type HomepageData } from "@/lib/firebase/firestore";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
-const slides = [
+interface HeroSlideView {
+  id: number;
+  image: string;
+  tag: string;
+  title: string;
+  description: string;
+  cta: {
+    label: string;
+    href: string;
+  };
+  accent: string;
+}
+
+interface PillarView {
+  icon: typeof Sprout;
+  title: string;
+  description: string;
+  link: string;
+  color: string;
+}
+
+interface StatView {
+  value: string;
+  label: string;
+}
+
+// Default fallback data (agar Firebase se data nahi aata)
+const defaultSlides: HeroSlideView[] = [
   {
     id: 1,
-    image:
-      "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1600&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1600&q=80&fit=crop",
     tag: "Sustainable Agriculture",
     title: "Cultivating Futures,\nOne Field at a Time",
-    description:
-      "Empowering farmers across rural India with modern techniques, fair markets, and unwavering support for a sustainable tomorrow.",
+    description: "Empowering farmers across rural India with modern techniques, fair markets, and unwavering support for a sustainable tomorrow.",
     cta: { label: "Our Impact", href: "/social-impact" },
     accent: "#52B788",
   },
   {
     id: 2,
-    image:
-      "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=1600&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=1600&q=80&fit=crop",
     tag: "Community Development",
     title: "Building Villages,\nStrengthening Bonds",
-    description:
-      "From self-help groups to cooperative networks — AGRIGO weaves communities together through education, resources, and shared vision.",
+    description: "From self-help groups to cooperative networks — AGRIGO weaves communities together through education, resources, and shared vision.",
     cta: { label: "About AGRIGO", href: "/about" },
     accent: "#D4A853",
   },
   {
     id: 3,
-    image:
-      "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1600&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1600&q=80&fit=crop",
     tag: "Social Impact",
     title: "Measurable Change,\nReal Transformation",
-    description:
-      "Thousands of lives touched. Hundreds of villages empowered. Our data-driven approach ensures every initiative creates lasting change.",
+    description: "Thousands of lives touched. Hundreds of villages empowered. Our data-driven approach ensures every initiative creates lasting change.",
     cta: { label: "See Gallery", href: "/gallery" },
     accent: "#7C5C3B",
   },
 ];
 
-const pillars = [
+const defaultPillars: PillarView[] = [
   {
     icon: Sprout,
     title: "Sustainable Farming",
-    description:
-      "We introduce climate-resilient farming methods — from drip irrigation to organic certification — that increase yield and reduce costs for smallholder farmers.",
+    description: "We introduce climate-resilient farming methods — from drip irrigation to organic certification — that increase yield and reduce costs for smallholder farmers.",
     link: "/about",
     color: "#1B4332",
   },
   {
     icon: Users,
     title: "Community Empowerment",
-    description:
-      "Through self-help groups, cooperative societies, and vocational training, we build human capital that drives lasting village-level transformation.",
+    description: "Through self-help groups, cooperative societies, and vocational training, we build human capital that drives lasting village-level transformation.",
     link: "/social-impact",
     color: "#2D6A4F",
   },
   {
     icon: BarChart3,
     title: "Market Access",
-    description:
-      "We bridge the gap between rural producers and urban markets — negotiating fair prices, providing logistics support, and eliminating exploitative middlemen.",
+    description: "We bridge the gap between rural producers and urban markets — negotiating fair prices, providing logistics support, and eliminating exploitative middlemen.",
     link: "/social-impact",
     color: "#7C5C3B",
   },
   {
     icon: Heart,
     title: "Social Welfare",
-    description:
-      "Health camps, nutrition programs, and women's empowerment initiatives run alongside agricultural work — because whole communities thrive together.",
+    description: "Health camps, nutrition programs, and women's empowerment initiatives run alongside agricultural work — because whole communities thrive together.",
     link: "/social-impact",
     color: "#1B4332",
   },
 ];
 
-const stats = [
+const defaultStats: StatView[] = [
   { value: "12,400+", label: "Farmers Supported" },
   { value: "340+", label: "Villages Reached" },
   { value: "8", label: "States Operational" },
@@ -93,9 +113,84 @@ const stats = [
 ];
 
 export default function HomePage() {
-  const [current, setCurrent] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  // Dynamic content state
+  const [slides, setSlides] = useState<HeroSlideView[]>(defaultSlides);
+  const [stats, setStats] = useState<StatView[]>(defaultStats);
+  const [pillars, setPillars] = useState<PillarView[]>(defaultPillars);
+  const [introHeading, setIntroHeading] = useState<string>("Agriculture as a tool for dignity and prosperity");
+  const [introPara1, setIntroPara1] = useState<string>("AGRIGO is a grassroots organisation working at the intersection of sustainable agriculture and community development. Founded in 2015, we have grown from a small cooperative in Punjab to a multi-state movement empowering over 12,000 farmers and their families.");
+  const [introPara2, setIntroPara2] = useState<string>("We believe that when farmers thrive, villages thrive — and when villages thrive, the nation grows. Our integrated approach combines technical assistance, financial inclusion, market linkages, and deep community trust.");
+  const [ctaHeading, setCtaHeading] = useState<string>("Help us plant seeds of change across India");
+  const [ctaBody, setCtaBody] = useState<string>("Whether you are a donor, a corporate partner, a volunteer, or a farmer seeking support — AGRIGO has a place for you in this movement.");
 
+  // Slider state
+  const [current, setCurrent] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+
+  // Fetch data from Firebase
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const content = await getHomepageContent();
+        const homepageData: HomepageData | undefined = content?.data;
+
+        if (homepageData) {
+          
+          // Update slides from Firebase
+          if (homepageData.slides && homepageData.slides.length > 0) {
+            const firebaseSlides: HeroSlideView[] = homepageData.slides.map((slide, index) => ({
+              id: index + 1,
+              image: slide.imageUrl,
+              tag: slide.tag,
+              title: slide.title,
+              description: slide.description,
+              cta: { label: slide.ctaLabel, href: slide.ctaHref },
+              accent: index === 0 ? "#52B788" : index === 1 ? "#D4A853" : "#7C5C3B",
+            }));
+            setSlides(firebaseSlides);
+          }
+          
+          // Update stats from Firebase
+          if (homepageData.stats && homepageData.stats.length > 0) {
+            setStats(homepageData.stats);
+          }
+          
+          // Update pillars from Firebase
+          if (homepageData.pillars && homepageData.pillars.length > 0) {
+            const updatedPillars = defaultPillars.map((pillar, index) => {
+              if (homepageData.pillars[index]) {
+                return {
+                  ...pillar,
+                  title: homepageData.pillars[index].title,
+                  description: homepageData.pillars[index].description,
+                };
+              }
+              return pillar;
+            });
+            setPillars(updatedPillars);
+          }
+          
+          // Update intro section
+          if (homepageData.introHeading) setIntroHeading(homepageData.introHeading);
+          if (homepageData.introPara1) setIntroPara1(homepageData.introPara1);
+          if (homepageData.introPara2) setIntroPara2(homepageData.introPara2);
+          
+          // Update CTA
+          if (homepageData.ctaHeading) setCtaHeading(homepageData.ctaHeading);
+          if (homepageData.ctaBody) setCtaBody(homepageData.ctaBody);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading homepage content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Slider functions
   const goTo = useCallback(
     (index: number) => {
       if (isTransitioning) return;
@@ -110,11 +205,11 @@ export default function HomePage() {
 
   const next = useCallback(() => {
     goTo((current + 1) % slides.length);
-  }, [current, goTo]);
+  }, [current, goTo, slides.length]);
 
   const prev = useCallback(() => {
     goTo((current - 1 + slides.length) % slides.length);
-  }, [current, goTo]);
+  }, [current, goTo, slides.length]);
 
   useEffect(() => {
     const timer = setInterval(next, 6000);
@@ -122,6 +217,17 @@ export default function HomePage() {
   }, [next]);
 
   const slide = slides[current];
+
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.5, delay },
+  });
+
+  if (loading) {
+    return <LoadingSkeleton variant="home" />;
+  }
 
   return (
     <div className="bg-[#F7F4EE]">
@@ -233,8 +339,8 @@ export default function HomePage() {
       {/* ── STATS BAND ── */}
       <section className="bg-[#1B4332]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
+          {stats.map((stat, index) => (
+            <motion.div key={stat.label} {...fadeUp(index * 0.08)} className="text-center">
               <p
                 className="text-3xl lg:text-4xl font-bold text-[#D4A853]"
                 style={{ fontFamily: "var(--font-playfair)" }}
@@ -242,7 +348,7 @@ export default function HomePage() {
                 {stat.value}
               </p>
               <p className="text-sm text-[#F7F4EE]/60 mt-1">{stat.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -251,7 +357,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-6 lg:px-10 py-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Text */}
-          <div>
+          <motion.div {...fadeUp()}>
             <div className="flex items-center gap-3 mb-5">
               <span className="w-10 h-px bg-[#1B4332]" />
               <span className="text-xs font-semibold tracking-widest uppercase text-[#2D6A4F]">
@@ -262,19 +368,13 @@ export default function HomePage() {
               className="text-4xl lg:text-5xl font-bold text-[#1B4332] leading-tight mb-6"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              Agriculture as a tool for dignity and prosperity
+              {introHeading}
             </h2>
             <p className="text-[#6B6B5E] leading-relaxed mb-5">
-              AGRIGO is a grassroots organisation working at the intersection of
-              sustainable agriculture and community development. Founded in 2015,
-              we have grown from a small cooperative in Punjab to a multi-state
-              movement empowering over 12,000 farmers and their families.
+              {introPara1}
             </p>
             <p className="text-[#6B6B5E] leading-relaxed mb-8">
-              We believe that when farmers thrive, villages thrive — and when
-              villages thrive, the nation grows. Our integrated approach combines
-              technical assistance, financial inclusion, market linkages, and
-              deep community trust.
+              {introPara2}
             </p>
             <Link
               href="/about"
@@ -282,10 +382,10 @@ export default function HomePage() {
             >
               Read Our Full Story <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
+          </motion.div>
 
           {/* Visual Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <motion.div {...fadeUp(0.08)} className="grid grid-cols-2 gap-4">
             <img
               src="https://images.unsplash.com/photo-1472396961693-142e6e269027?w=600&q=80&fit=crop"
               alt="Agriculture"
@@ -311,7 +411,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -340,8 +440,9 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {pillars.map((pillar, i) => (
-              <div
+              <motion.div
                 key={i}
+                {...fadeUp(i * 0.08)}
                 className="group bg-[#F7F4EE] rounded-2xl p-7 border border-[#1B4332]/8 hover:border-[#1B4332]/20 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
               >
                 <div
@@ -368,7 +469,7 @@ export default function HomePage() {
                 >
                   Learn More <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -377,7 +478,7 @@ export default function HomePage() {
       {/* ── BOTTOM CTA ── */}
       <section className="py-24 bg-[#F7F4EE]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="bg-[#1B4332] rounded-3xl p-10 md:p-16 overflow-hidden relative">
+          <motion.div {...fadeUp()} className="bg-[#1B4332] rounded-3xl p-10 md:p-16 overflow-hidden relative">
             {/* Decorative */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-[#2D6A4F] rounded-full -translate-y-1/2 translate-x-1/2 opacity-50" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#52B788]/20 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -391,14 +492,12 @@ export default function HomePage() {
                   className="text-4xl font-bold text-[#F7F4EE] leading-tight"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  Help us plant seeds of change across India
+                  {ctaHeading}
                 </h2>
               </div>
               <div>
                 <p className="text-[#F7F4EE]/60 mb-8 leading-relaxed">
-                  Whether you are a donor, a corporate partner, a volunteer, or a
-                  farmer seeking support — AGRIGO has a place for you in this
-                  movement.
+                  {ctaBody}
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Link
@@ -416,7 +515,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>

@@ -1,6 +1,7 @@
+// components/admin/SiteSettingsEditor.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings, Globe, MapPin, Mail, Phone } from "lucide-react";
 import {
   EditorSection,
@@ -12,85 +13,156 @@ import {
   AddButton,
   EditorPageHeader,
 } from "./AdminUI";
+import { getSiteSettings, updateSiteSettings, type SiteSettingsData } from "@/lib/firebase/firestore";
 
-export default function SiteSettingsEditor() {
-  /* Org Info */
-  const [orgName, setOrgName] = useState("AGRIGO");
-  const [orgTagline, setOrgTagline] = useState(
-    "Rooted in purpose. Growing communities. Cultivating sustainable futures."
-  );
-  const [orgEstYear, setOrgEstYear] = useState("2015");
-  const [orgEmail, setOrgEmail] = useState("info@agrigo.org");
-  const [orgPhone, setOrgPhone] = useState("+91 12345 67890");
+interface Props {
+  onSaveComplete?: () => void;
+}
 
-  /* Header Nav Links */
-  const [navLinks, setNavLinks] = useState([
+const defaultData: SiteSettingsData = {
+  orgName: "AGRIGO",
+  orgTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures.",
+  orgEstYear: "2015",
+  orgEmail: "info@agrigo.org",
+  orgPhone: "+91 12345 67890",
+  navLinks: [
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Social Impact", href: "/social-impact" },
     { label: "Gallery", href: "/gallery" },
     { label: "Contact Us", href: "/contact" },
-  ]);
-
-  /* Footer */
-  const [footerTagline, setFooterTagline] = useState(
-    "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation."
-  );
-  const [footerAddress, setFooterAddress] = useState(
-    "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India"
-  );
-  const [footerPhone1, setFooterPhone1] = useState("+91 12345 67890");
-  const [footerPhone2, setFooterPhone2] = useState("+91 12345 67891");
-  const [footerEmail1, setFooterEmail1] = useState("info@agrigo.org");
-  const [footerEmail2, setFooterEmail2] = useState("support@agrigo.org");
-
-  /* Footer Social */
-  const [footerSocial, setFooterSocial] = useState([
+  ],
+  footerTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.",
+  footerAddress: "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
+  footerPhone1: "+91 12345 67890",
+  footerPhone2: "+91 12345 67891",
+  footerEmail1: "info@agrigo.org",
+  footerEmail2: "support@agrigo.org",
+  footerSocial: [
     { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
     { platform: "Instagram", handle: "@agrigo.in", url: "#" },
     { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
     { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
     { platform: "YouTube", handle: "AGRIGO Channel", url: "#" },
-  ]);
-
-  /* Footer Bottom Links */
-  const [legalLinks, setLegalLinks] = useState([
+  ],
+  legalLinks: [
     { label: "Privacy Policy", href: "#" },
     { label: "Terms of Use", href: "#" },
     { label: "Sitemap", href: "#" },
-  ]);
+  ],
+  footerCtaHeading: "Ready to make an impact together?",
+  footerCtaSubtitle: "Partner with AGRIGO to transform agriculture and empower communities.",
+  siteTitle: "AGRIGO — Agriculture, Community & Social Impact",
+  metaDescription: "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+};
 
-  /* Footer CTA */
-  const [footerCtaHeading, setFooterCtaHeading] = useState(
-    "Ready to make an impact together?"
-  );
-  const [footerCtaSubtitle, setFooterCtaSubtitle] = useState(
-    "Partner with AGRIGO to transform agriculture and empower communities."
-  );
+export default function SiteSettingsEditor({ onSaveComplete }: Props) {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+  const [data, setData] = useState<SiteSettingsData>(defaultData);
 
-  /* SEO */
-  const [siteTitle, setSiteTitle] = useState(
-    "AGRIGO — Agriculture, Community & Social Impact"
-  );
-  const [metaDescription, setMetaDescription] = useState(
-    "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India."
-  );
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log("[SiteSettingsEditor] Loading site settings from Firestore...");
+        const content = await getSiteSettings();
+        if (content?.data) {
+          console.log("[SiteSettingsEditor] Loaded site settings:", content.data);
+          setData(content.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading site settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
-  /* Helpers */
-  const updateNav = (i: number, key: string, val: string) =>
-    setNavLinks((p) => p.map((n, idx) => (idx === i ? { ...n, [key]: val } : n)));
-  const addNav = () => setNavLinks((p) => [...p, { label: "New Page", href: "/new-page" }]);
-  const removeNav = (i: number) => setNavLinks((p) => p.filter((_, idx) => idx !== i));
+  const updateNav = (i: number, key: string, val: string) => {
+    setData(prev => ({
+      ...prev,
+      navLinks: prev.navLinks.map((n, idx) => (idx === i ? { ...n, [key]: val } : n))
+    }));
+  };
 
-  const updateSocial = (i: number, key: string, val: string) =>
-    setFooterSocial((p) => p.map((s, idx) => (idx === i ? { ...s, [key]: val } : s)));
-  const addSocial = () => setFooterSocial((p) => [...p, { platform: "Platform", handle: "@handle", url: "#" }]);
-  const removeSocial = (i: number) => setFooterSocial((p) => p.filter((_, idx) => idx !== i));
+  const addNav = () => {
+    setData(prev => ({
+      ...prev,
+      navLinks: [...prev.navLinks, { label: "New Page", href: "/new-page" }]
+    }));
+  };
 
-  const updateLegal = (i: number, key: string, val: string) =>
-    setLegalLinks((p) => p.map((l, idx) => (idx === i ? { ...l, [key]: val } : l)));
-  const addLegal = () => setLegalLinks((p) => [...p, { label: "New Link", href: "#" }]);
-  const removeLegal = (i: number) => setLegalLinks((p) => p.filter((_, idx) => idx !== i));
+  const removeNav = (i: number) => {
+    setData(prev => ({
+      ...prev,
+      navLinks: prev.navLinks.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  const updateSocial = (i: number, key: string, val: string) => {
+    setData(prev => ({
+      ...prev,
+      footerSocial: prev.footerSocial.map((s, idx) => (idx === i ? { ...s, [key]: val } : s))
+    }));
+  };
+
+  const addSocial = () => {
+    setData(prev => ({
+      ...prev,
+      footerSocial: [...prev.footerSocial, { platform: "Platform", handle: "@handle", url: "#" }]
+    }));
+  };
+
+  const removeSocial = (i: number) => {
+    setData(prev => ({
+      ...prev,
+      footerSocial: prev.footerSocial.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  const updateLegal = (i: number, key: string, val: string) => {
+    setData(prev => ({
+      ...prev,
+      legalLinks: prev.legalLinks.map((l, idx) => (idx === i ? { ...l, [key]: val } : l))
+    }));
+  };
+
+  const addLegal = () => {
+    setData(prev => ({
+      ...prev,
+      legalLinks: [...prev.legalLinks, { label: "New Link", href: "#" }]
+    }));
+  };
+
+  const removeLegal = (i: number) => {
+    setData(prev => ({
+      ...prev,
+      legalLinks: prev.legalLinks.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      console.log("[SiteSettingsEditor] Saving site settings to Firestore:", data);
+      await updateSiteSettings({ data });
+      console.log("[SiteSettingsEditor] Site settings saved successfully");
+      if (onSaveComplete) onSaveComplete();
+    } catch (error: unknown) {
+      console.error("Error saving site settings:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-[#1B4332] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -100,25 +172,35 @@ export default function SiteSettingsEditor() {
         description="Configure global settings — organisation info, header navigation, footer content, and SEO metadata."
       />
 
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-6 py-2 bg-[#1B4332] text-white rounded-lg text-sm font-semibold hover:bg-[#2D6A4F] disabled:opacity-60 transition-colors"
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
+
       {/* Organisation Info */}
       <EditorSection title="Organisation Information" subtitle="Core details used throughout the site">
         <TwoCol>
           <Field label="Organisation Name">
-            <TextInput value={orgName} onChange={setOrgName} placeholder="AGRIGO" />
+            <TextInput value={data.orgName} onChange={(v) => setData(prev => ({ ...prev, orgName: v }))} placeholder="AGRIGO" />
           </Field>
           <Field label="Established Year">
-            <TextInput value={orgEstYear} onChange={setOrgEstYear} placeholder="2015" />
+            <TextInput value={data.orgEstYear} onChange={(v) => setData(prev => ({ ...prev, orgEstYear: v }))} placeholder="2015" />
           </Field>
         </TwoCol>
         <Field label="Organisation Tagline">
-          <Textarea value={orgTagline} onChange={setOrgTagline} rows={2} />
+          <Textarea value={data.orgTagline} onChange={(v) => setData(prev => ({ ...prev, orgTagline: v }))} rows={2} />
         </Field>
         <TwoCol>
           <Field label="Primary Email">
-            <TextInput value={orgEmail} onChange={setOrgEmail} placeholder="info@agrigo.org" />
+            <TextInput value={data.orgEmail} onChange={(v) => setData(prev => ({ ...prev, orgEmail: v }))} placeholder="info@agrigo.org" />
           </Field>
           <Field label="Primary Phone">
-            <TextInput value={orgPhone} onChange={setOrgPhone} placeholder="+91 12345 67890" />
+            <TextInput value={data.orgPhone} onChange={(v) => setData(prev => ({ ...prev, orgPhone: v }))} placeholder="+91 12345 67890" />
           </Field>
         </TwoCol>
       </EditorSection>
@@ -126,8 +208,8 @@ export default function SiteSettingsEditor() {
       {/* Header Nav */}
       <EditorSection title="Header Navigation Links" subtitle="The navigation menu links in the sticky header bar">
         <div className="space-y-3">
-          {navLinks.map((link, i) => (
-            <ItemCard key={i} index={i} total={navLinks.length} onRemove={() => removeNav(i)} label="Nav Link">
+          {data.navLinks.map((link, i) => (
+            <ItemCard key={i} index={i} total={data.navLinks.length} onRemove={() => removeNav(i)} label="Nav Link">
               <TwoCol>
                 <Field label="Link Label">
                   <TextInput value={link.label} onChange={(v) => updateNav(i, "label", v)} placeholder="About Us" />
@@ -145,35 +227,35 @@ export default function SiteSettingsEditor() {
       {/* Footer CTA Strip */}
       <EditorSection title="Footer CTA Strip" subtitle="The top banner inside the footer prompting users to get in touch">
         <Field label="Heading">
-          <TextInput value={footerCtaHeading} onChange={setFooterCtaHeading} />
+          <TextInput value={data.footerCtaHeading} onChange={(v) => setData(prev => ({ ...prev, footerCtaHeading: v }))} />
         </Field>
         <Field label="Subtitle">
-          <TextInput value={footerCtaSubtitle} onChange={setFooterCtaSubtitle} />
+          <TextInput value={data.footerCtaSubtitle} onChange={(v) => setData(prev => ({ ...prev, footerCtaSubtitle: v }))} />
         </Field>
       </EditorSection>
 
       {/* Footer Brand */}
       <EditorSection title="Footer Brand & Contact" subtitle="Address, phone and email shown in the footer's contact column">
         <Field label="Footer Tagline">
-          <Textarea value={footerTagline} onChange={setFooterTagline} rows={2} />
+          <Textarea value={data.footerTagline} onChange={(v) => setData(prev => ({ ...prev, footerTagline: v }))} rows={2} />
         </Field>
-        <Field label="Footer Address" hint="Use \\n for line breaks">
-          <Textarea value={footerAddress} onChange={setFooterAddress} rows={3} />
+        <Field label="Footer Address" hint="Use \n for line breaks">
+          <Textarea value={data.footerAddress} onChange={(v) => setData(prev => ({ ...prev, footerAddress: v }))} rows={3} />
         </Field>
         <TwoCol>
           <Field label="Phone 1">
-            <TextInput value={footerPhone1} onChange={setFooterPhone1} />
+            <TextInput value={data.footerPhone1} onChange={(v) => setData(prev => ({ ...prev, footerPhone1: v }))} />
           </Field>
           <Field label="Phone 2">
-            <TextInput value={footerPhone2} onChange={setFooterPhone2} />
+            <TextInput value={data.footerPhone2} onChange={(v) => setData(prev => ({ ...prev, footerPhone2: v }))} />
           </Field>
         </TwoCol>
         <TwoCol>
           <Field label="Email 1">
-            <TextInput value={footerEmail1} onChange={setFooterEmail1} />
+            <TextInput value={data.footerEmail1} onChange={(v) => setData(prev => ({ ...prev, footerEmail1: v }))} />
           </Field>
           <Field label="Email 2">
-            <TextInput value={footerEmail2} onChange={setFooterEmail2} />
+            <TextInput value={data.footerEmail2} onChange={(v) => setData(prev => ({ ...prev, footerEmail2: v }))} />
           </Field>
         </TwoCol>
       </EditorSection>
@@ -181,8 +263,8 @@ export default function SiteSettingsEditor() {
       {/* Footer Social */}
       <EditorSection title="Footer Social Media Links" subtitle="Social handles in the footer's last column">
         <div className="space-y-3">
-          {footerSocial.map((s, i) => (
-            <ItemCard key={i} index={i} total={footerSocial.length} onRemove={() => removeSocial(i)} label="Social">
+          {data.footerSocial.map((s, i) => (
+            <ItemCard key={i} index={i} total={data.footerSocial.length} onRemove={() => removeSocial(i)} label="Social">
               <div className="grid grid-cols-3 gap-3">
                 <Field label="Platform">
                   <TextInput value={s.platform} onChange={(v) => updateSocial(i, "platform", v)} />
@@ -203,8 +285,8 @@ export default function SiteSettingsEditor() {
       {/* Footer Legal Links */}
       <EditorSection title="Footer Bottom Links" subtitle="Privacy policy, terms, sitemap links in the footer bar">
         <div className="space-y-3">
-          {legalLinks.map((link, i) => (
-            <ItemCard key={i} index={i} total={legalLinks.length} onRemove={() => removeLegal(i)} label="Link">
+          {data.legalLinks.map((link, i) => (
+            <ItemCard key={i} index={i} total={data.legalLinks.length} onRemove={() => removeLegal(i)} label="Link">
               <TwoCol>
                 <Field label="Label">
                   <TextInput value={link.label} onChange={(v) => updateLegal(i, "label", v)} />
@@ -222,12 +304,12 @@ export default function SiteSettingsEditor() {
       {/* SEO */}
       <EditorSection title="SEO & Metadata" subtitle="Browser tab title and search engine description">
         <Field label="Site Title (browser tab & search results)">
-          <TextInput value={siteTitle} onChange={setSiteTitle} />
+          <TextInput value={data.siteTitle} onChange={(v) => setData(prev => ({ ...prev, siteTitle: v }))} />
         </Field>
         <Field label="Meta Description" hint="Keep under 160 characters for best SEO results">
-          <Textarea value={metaDescription} onChange={setMetaDescription} rows={3} />
-          <p className={`text-[10px] mt-1 ${metaDescription.length > 160 ? "text-red-400" : "text-[#A0BEA8]"}`}>
-            {metaDescription.length}/160 characters
+          <Textarea value={data.metaDescription} onChange={(v) => setData(prev => ({ ...prev, metaDescription: v }))} rows={3} />
+          <p className={`text-[10px] mt-1 ${data.metaDescription.length > 160 ? "text-red-400" : "text-[#A0BEA8]"}`}>
+            {data.metaDescription.length}/160 characters
           </p>
         </Field>
       </EditorSection>

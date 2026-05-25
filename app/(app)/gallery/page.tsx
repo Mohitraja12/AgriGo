@@ -1,105 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { X, ZoomIn, Tag } from "lucide-react";
+import { getGalleryContent, type GalleryData } from "@/lib/firebase/firestore";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 const categories = ["All", "Farming", "Community", "Events", "Nature", "Awards"];
 
-const galleryItems = [
-  {
-    id: 1,
-    src: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80&fit=crop",
-    caption: "Wheat fields of Punjab at golden hour",
-    category: "Farming",
-    span: "col-span-1 row-span-2",
-  },
-  {
-    id: 2,
-    src: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop",
-    caption: "Organic training workshop in Ludhiana",
-    category: "Community",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 3,
-    src: "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=800&q=80&fit=crop",
-    caption: "Harvest season celebration, 2023",
-    category: "Events",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop",
-    caption: "Water harvesting pond in Haryana",
-    category: "Nature",
-    span: "col-span-2 row-span-1",
-  },
-  {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&q=80&fit=crop",
-    caption: "Mountain farming outreach — Himachal",
-    category: "Farming",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 6,
-    src: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
-    caption: "National Rural Excellence Award ceremony",
-    category: "Awards",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 7,
-    src: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop",
-    caption: "Women's cooperative orientation session",
-    category: "Community",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 8,
-    src: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop",
-    caption: "Tree plantation drive — 2.1 million trees",
-    category: "Nature",
-    span: "col-span-1 row-span-2",
-  },
-  {
-    id: 9,
-    src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop",
-    caption: "AgriTech digital kiosk installation",
-    category: "Community",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 10,
-    src: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=800&q=80&fit=crop",
-    caption: "Village community dialogue session",
-    category: "Events",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 11,
-    src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80&fit=crop",
-    caption: "Annual volunteer summit — New Delhi",
-    category: "Events",
-    span: "col-span-1 row-span-1",
-  },
-  {
-    id: 12,
-    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&fit=crop",
-    caption: "Agricultural research field visit",
-    category: "Farming",
-    span: "col-span-1 row-span-1",
-  },
-];
+const defaultGalleryContent: GalleryData = {
+  pageHeading: "Our Work in Pictures",
+  pageSubtitle: "A curated visual journey through the farms, villages, events, and lives that AGRIGO has touched over a decade of work.",
+  images: [
+    { src: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80&fit=crop", caption: "Wheat fields of Punjab at golden hour", category: "Farming" },
+    { src: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop", caption: "Organic training workshop in Ludhiana", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=800&q=80&fit=crop", caption: "Harvest season celebration, 2023", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop", caption: "Water harvesting pond in Haryana", category: "Nature" },
+    { src: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&q=80&fit=crop", caption: "Mountain farming outreach — Himachal", category: "Farming" },
+    { src: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop", caption: "National Rural Excellence Award ceremony", category: "Awards" },
+    { src: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop", caption: "Women's cooperative orientation session", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop", caption: "Tree plantation drive — 2.1 million trees", category: "Nature" },
+    { src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop", caption: "AgriTech digital kiosk installation", category: "Community" },
+    { src: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=800&q=80&fit=crop", caption: "Village community dialogue session", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80&fit=crop", caption: "Annual volunteer summit — New Delhi", category: "Events" },
+    { src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&fit=crop", caption: "Agricultural research field visit", category: "Farming" },
+  ],
+};
 
 export default function GalleryPage() {
+  const [content, setContent] = useState<GalleryData>(defaultGalleryContent);
+  const [loading, setLoading] = useState<boolean>(true);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [lightbox, setLightbox] = useState<(typeof galleryItems)[0] | null>(null);
+  const [lightbox, setLightbox] = useState<GalleryData["images"][number] | null>(null);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const galleryContent = await getGalleryContent();
+        if (galleryContent?.data) {
+          setContent(galleryContent.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading gallery content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContent();
+  }, []);
+
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.5, delay },
+  });
+
+  if (loading) {
+    return <LoadingSkeleton variant="gallery" />;
+  }
 
   const filtered =
     activeCategory === "All"
-      ? galleryItems
-      : galleryItems.filter((item) => item.category === activeCategory);
+      ? content.images
+      : content.images.filter((item) => item.category === activeCategory);
 
   return (
     <div className="bg-[#F7F4EE] pt-20">
@@ -122,10 +87,10 @@ export default function GalleryPage() {
             className="text-5xl md:text-6xl font-bold text-[#F7F4EE] leading-tight"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Our Work in Pictures
+            {content.pageHeading}
           </h1>
           <p className="mt-4 text-[#F7F4EE]/65 max-w-lg leading-relaxed">
-            A curated visual journey through the farms, villages, events, and lives that AGRIGO has touched over a decade of work.
+            {content.pageSubtitle}
           </p>
         </div>
       </section>
@@ -156,9 +121,10 @@ export default function GalleryPage() {
       {/* ── GALLERY GRID ── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {filtered.map((item) => (
-            <div
-              key={item.id}
+          {filtered.map((item, index) => (
+            <motion.div
+              key={`${item.category}-${item.caption}-${index}`}
+              {...fadeUp(index * 0.05)}
               className="group relative rounded-2xl overflow-hidden bg-[#EDE8DC] cursor-pointer aspect-[4/3]"
               onClick={() => setLightbox(item)}
             >
@@ -180,7 +146,7 @@ export default function GalleryPage() {
               <div className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <ZoomIn className="w-4 h-4 text-[#1B4332]" />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

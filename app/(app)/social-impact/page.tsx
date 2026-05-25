@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,77 +14,87 @@ import {
   TreePine,
   Award,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
+import { getSocialImpactContent, type SocialImpactData } from "@/lib/firebase/firestore";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
-const stats = [
-  { value: 12400, suffix: "+", label: "Farmers Assisted", icon: Sprout, color: "#1B4332" },
-  { value: 340, suffix: "+", label: "Villages Reached", icon: Building2, color: "#2D6A4F" },
-  { value: 500, suffix: "+", label: "Women SHGs Formed", icon: Users, color: "#7C5C3B" },
-  { value: 62, prefix: "₹", suffix: " Lakh+", label: "Additional Farmer Income", icon: TrendingUp, color: "#D4A853" },
+const statDecorations = [
+  { icon: Sprout, color: "#1B4332" },
+  { icon: Building2, color: "#2D6A4F" },
+  { icon: HeartHandshake, color: "#7C5C3B" },
+  { icon: TrendingUp, color: "#D4A853" },
 ];
 
-const timeline = [
-  {
-    year: "2016",
-    title: "Organic Farming Training Programme",
-    description:
-      "Launched our flagship organic farming initiative across 12 villages in Ludhiana district. Over 200 farmers transitioned to chemical-free cultivation, reducing input costs by 30% and improving soil health scores.",
-    image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop",
-    tag: "Agriculture",
-    icon: Sprout,
-    metric: "200 farmers • 30% cost reduction",
-  },
-  {
-    year: "2017",
-    title: "Community Water Harvesting Network",
-    description:
-      "Built 48 farm ponds and 120 borewell recharge structures across Haryana and Punjab. The project has conserved an estimated 180 million litres of rainwater annually, combating drought conditions.",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop",
-    tag: "Environment",
-    icon: Droplets,
-    metric: "48 ponds • 180M litres saved yearly",
-  },
-  {
-    year: "2019",
-    title: "Rural Women's Cooperative Network",
-    description:
-      "Established 150 Self-Help Groups across 3 states, collectively managing a revolving credit fund of ₹2.5 crore. Women-led micro-enterprises in food processing and handicrafts generated 1,200+ livelihoods.",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop",
-    tag: "Empowerment",
-    icon: HeartHandshake,
-    metric: "150 SHGs • ₹2.5 Cr credit fund",
-  },
-  {
-    year: "2020",
-    title: "Digital Literacy & AgriTech Adoption",
-    description:
-      "During COVID-19, deployed 280 solar-powered smart kiosks in villages enabling farmers to access e-mandi prices, weather alerts, and government scheme information. Trained 3,500 farmers on smartphone usage.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop",
-    tag: "Technology",
-    icon: BookOpen,
-    metric: "280 kiosks • 3,500 farmers trained",
-  },
-  {
-    year: "2022",
-    title: "Tree Plantation & Carbon Sequestration Drive",
-    description:
-      "Partnered with Forest Department and 8,000 farming households to plant 2.1 million trees on farm boundaries and common land, creating green corridors and supplementary income through agroforestry.",
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop",
-    tag: "Environment",
-    icon: TreePine,
-    metric: "2.1 million trees • 8 states",
-  },
-  {
-    year: "2024",
-    title: "National Rural Excellence Award",
-    description:
-      "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development spanning agriculture, livelihoods, and ecology.",
-    image: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
-    tag: "Recognition",
-    icon: Award,
-    metric: "Govt. of India Recognition",
-  },
-];
+const defaultContent: SocialImpactData = {
+  pageHeading: "Every Number Hides a Human Story",
+  pageSubtitle: "Behind every statistic is a family that now eats better, earns more, and hopes further. Here is the evidence of our collective work.",
+  stats: [
+    { value: 12400, suffix: "+", prefix: "", label: "Farmers Assisted" },
+    { value: 340, suffix: "+", prefix: "", label: "Villages Reached" },
+    { value: 500, suffix: "+", prefix: "", label: "Women SHGs Formed" },
+    { value: 62, suffix: " Lakh+", prefix: "₹", label: "Additional Farmer Income" },
+  ],
+  timeline: [
+    {
+      year: "2016",
+      title: "Organic Farming Training Programme",
+      description:
+        "Launched our flagship organic farming initiative across 12 villages in Ludhiana district. Over 200 farmers transitioned to chemical-free cultivation, reducing input costs by 30% and improving soil health scores.",
+      imageUrl: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop",
+      tag: "Agriculture",
+      metric: "200 farmers • 30% cost reduction",
+    },
+    {
+      year: "2017",
+      title: "Community Water Harvesting Network",
+      description:
+        "Built 48 farm ponds and 120 borewell recharge structures across Haryana and Punjab. The project has conserved an estimated 180 million litres of rainwater annually, combating drought conditions.",
+      imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop",
+      tag: "Environment",
+      metric: "48 ponds • 180M litres saved yearly",
+    },
+    {
+      year: "2019",
+      title: "Rural Women's Cooperative Network",
+      description:
+        "Established 150 Self-Help Groups across 3 states, collectively managing a revolving credit fund of ₹2.5 crore. Women-led micro-enterprises in food processing and handicrafts generated 1,200+ livelihoods.",
+      imageUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop",
+      tag: "Empowerment",
+      metric: "150 SHGs • ₹2.5 Cr credit fund",
+    },
+    {
+      year: "2020",
+      title: "Digital Literacy & AgriTech Adoption",
+      description:
+        "During COVID-19, deployed 280 solar-powered smart kiosks in villages enabling farmers to access e-mandi prices, weather alerts, and government scheme information. Trained 3,500 farmers on smartphone usage.",
+      imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop",
+      tag: "Technology",
+      metric: "280 kiosks • 3,500 farmers trained",
+    },
+    {
+      year: "2022",
+      title: "Tree Plantation & Carbon Sequestration Drive",
+      description:
+        "Partnered with Forest Department and 8,000 farming households to plant 2.1 million trees on farm boundaries and common land, creating green corridors and supplementary income through agroforestry.",
+      imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop",
+      tag: "Environment",
+      metric: "2.1 million trees • 8 states",
+    },
+    {
+      year: "2024",
+      title: "National Rural Excellence Award",
+      description:
+        "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development spanning agriculture, livelihoods, and ecology.",
+      imageUrl: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
+      tag: "Recognition",
+      metric: "Govt. of India Recognition",
+    },
+  ],
+  testimonialQuote: "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
+  testimonialTranslation: "AGRIGO changed my farm, changed my home, changed my dreams.",
+  testimonialAuthor: "Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab",
+};
 
 function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -124,6 +135,46 @@ function AnimatedCounter({ value, prefix = "", suffix = "" }: { value: number; p
 }
 
 export default function SocialImpactPage() {
+  const [content, setContent] = useState<SocialImpactData>(defaultContent);
+  const [loading, setLoading] = useState<boolean>(true);
+  const statsWithMeta = content.stats.map((stat, index) => ({
+    ...stat,
+    ...(statDecorations[index] ?? statDecorations[0]),
+  }));
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const socialImpactContent = await getSocialImpactContent();
+        if (socialImpactContent?.data) {
+          setContent((prev) => ({
+            ...prev,
+            ...socialImpactContent.data,
+            stats: socialImpactContent.data.stats?.length ? socialImpactContent.data.stats : prev.stats,
+            timeline: socialImpactContent.data.timeline?.length ? socialImpactContent.data.timeline : prev.timeline,
+          }));
+        }
+      } catch (error: unknown) {
+        console.error("Error loading social impact content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContent();
+  }, []);
+
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.5, delay },
+  });
+
+  if (loading) {
+    return <LoadingSkeleton variant="social-impact" />;
+  }
+
   return (
     <div className="bg-[#F7F4EE] pt-20">
       {/* ── PAGE HEADER ── */}
@@ -145,10 +196,10 @@ export default function SocialImpactPage() {
             className="text-5xl md:text-6xl font-bold text-[#F7F4EE] leading-tight max-w-2xl"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            Every Number Hides a Human Story
+            {content.pageHeading}
           </h1>
           <p className="mt-5 text-[#F7F4EE]/65 max-w-xl leading-relaxed text-lg">
-            Behind every statistic is a family that now eats better, earns more, and hopes further. Here is the evidence of our collective work.
+            {content.pageSubtitle}
           </p>
         </div>
       </section>
@@ -156,9 +207,10 @@ export default function SocialImpactPage() {
       {/* ── STAT COUNTERS ── */}
       <section className="py-16 bg-[#EDE8DC]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <div
+          {statsWithMeta.map((stat, index) => (
+            <motion.div
               key={stat.label}
+              {...fadeUp(index * 0.08)}
               className="bg-white rounded-2xl p-8 text-center border border-[#1B4332]/8 hover:shadow-md transition-shadow"
             >
               <div
@@ -174,7 +226,7 @@ export default function SocialImpactPage() {
                 <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
               </p>
               <p className="text-sm text-[#6B6B5E] mt-2">{stat.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -200,11 +252,12 @@ export default function SocialImpactPage() {
 
         {/* Alternating Layout */}
         <div className="space-y-16">
-          {timeline.map((item, i) => {
+          {content.timeline.map((item, i) => {
             const isEven = i % 2 === 0;
             return (
-              <div
+              <motion.div
                 key={i}
+                {...fadeUp(i * 0.08)}
                 className={`grid lg:grid-cols-2 gap-10 items-center ${
                   isEven ? "" : "lg:grid-flow-dense"
                 }`}
@@ -212,7 +265,7 @@ export default function SocialImpactPage() {
                 {/* Image */}
                 <div className={`rounded-3xl overflow-hidden aspect-video ${isEven ? "" : "lg:col-start-2"}`}>
                   <img
-                    src={item.image}
+                    src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
@@ -233,7 +286,7 @@ export default function SocialImpactPage() {
                   </div>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-9 h-9 bg-[#1B4332] rounded-xl flex items-center justify-center shrink-0">
-                      <item.icon className="w-5 h-5 text-[#D4A853]" />
+                      <Sparkles className="w-5 h-5 text-[#D4A853]" />
                     </div>
                     <h3
                       className="text-2xl font-bold text-[#1B4332]"
@@ -248,7 +301,7 @@ export default function SocialImpactPage() {
                     {item.metric}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -256,25 +309,25 @@ export default function SocialImpactPage() {
 
       {/* ── TESTIMONIAL ── */}
       <section className="bg-[#1B4332] py-20">
-        <div className="max-w-4xl mx-auto px-6 lg:px-10 text-center">
+        <motion.div {...fadeUp()} className="max-w-4xl mx-auto px-6 lg:px-10 text-center">
           <p
             className="text-3xl md:text-4xl font-bold text-[#F7F4EE] leading-relaxed mb-6"
             style={{ fontFamily: "var(--font-playfair)" }}
           >
-            "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla."
+            {content.testimonialQuote}
           </p>
           <p className="text-[#F7F4EE]/40 italic text-base mb-2">
-            "AGRIGO changed my farm, changed my home, changed my dreams."
+            {content.testimonialTranslation}
           </p>
           <p className="text-[#D4A853] font-semibold text-sm tracking-wide">
-            Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab
+            {content.testimonialAuthor}
           </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── CTA ── */}
       <section className="py-16 bg-[#EDE8DC]">
-        <div className="max-w-3xl mx-auto text-center px-6">
+        <motion.div {...fadeUp()} className="max-w-3xl mx-auto text-center px-6">
           <h2
             className="text-3xl font-bold text-[#1B4332] mb-4"
             style={{ fontFamily: "var(--font-playfair)" }}
@@ -290,7 +343,7 @@ export default function SocialImpactPage() {
           >
             Start a Conversation <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, Leaf } from "lucide-react";
+import { getSiteSettings, type SiteSettingsData } from "@/lib/firebase/firestore";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -13,10 +14,42 @@ const navLinks = [
   { label: "Contact Us", href: "/contact" },
 ];
 
+const defaultSiteSettings: SiteSettingsData = {
+  orgName: "AGRIGO",
+  orgTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures.",
+  orgEstYear: "2015",
+  orgEmail: "info@agrigo.org",
+  orgPhone: "+91 12345 67890",
+  navLinks,
+  footerTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.",
+  footerAddress: "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
+  footerPhone1: "+91 12345 67890",
+  footerPhone2: "+91 12345 67891",
+  footerEmail1: "info@agrigo.org",
+  footerEmail2: "support@agrigo.org",
+  footerSocial: [
+    { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
+    { platform: "Instagram", handle: "@agrigo.in", url: "#" },
+    { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
+    { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
+    { platform: "YouTube", handle: "AGRIGO Channel", url: "#" },
+  ],
+  legalLinks: [
+    { label: "Privacy Policy", href: "#" },
+    { label: "Terms of Use", href: "#" },
+    { label: "Sitemap", href: "#" },
+  ],
+  footerCtaHeading: "Ready to make an impact together?",
+  footerCtaSubtitle: "Partner with AGRIGO to transform agriculture and empower communities.",
+  siteTitle: "AGRIGO — Agriculture, Community & Social Impact",
+  metaDescription: "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+};
+
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsData>(defaultSiteSettings);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -25,12 +58,24 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+    const loadSiteSettings = async () => {
+      try {
+        const settings = await getSiteSettings();
+        if (settings?.data) {
+          setSiteSettings(settings.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading site settings:", error);
+      }
+    };
+
+    loadSiteSettings();
+  }, []);
 
   // On homepage hero, header overlays the dark image — use white text when not scrolled
   const isHero = pathname === "/";
   const overlayMode = isHero && !scrolled;
+  const headerLinks = siteSettings.navLinks.length > 0 ? siteSettings.navLinks : navLinks;
 
   return (
     <header
@@ -58,7 +103,7 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => {
+          {headerLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -110,12 +155,13 @@ export default function Header() {
         }`}
       >
         <div className="bg-[#F7F4EE]/95 backdrop-blur-md border-t border-[#1B4332]/10 px-6 pb-6 pt-2 flex flex-col gap-1">
-          {navLinks.map((link) => {
+          {headerLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                  onClick={() => setMenuOpen(false)}
                 className={`px-4 py-3 rounded-xl text-base font-medium transition-colors
                   ${
                     isActive
@@ -129,6 +175,7 @@ export default function Header() {
           })}
           <Link
             href="/contact"
+            onClick={() => setMenuOpen(false)}
             className="mt-3 px-5 py-3 bg-[#1B4332] text-[#F7F4EE] text-sm font-semibold rounded-xl text-center hover:bg-[#2D6A4F] transition-colors"
           >
             Get in Touch

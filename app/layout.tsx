@@ -1,7 +1,9 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import SiteFrame from "@/components/app/common/site-frame";
+import { AuthProvider } from "@/context/AuthContext";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -29,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="min-h-screen flex flex-col bg-[#F7F4EE] text-[#1C1C1C] font-sans antialiased">
-        <SiteFrame>{children}</SiteFrame>
+        <AuthProvider>
+          <SiteFrame>{children}</SiteFrame>
+        </AuthProvider>
       </body>
     </html>
   );

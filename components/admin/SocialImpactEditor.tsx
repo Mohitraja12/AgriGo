@@ -1,6 +1,7 @@
+// components/admin/SocialImpactEditor.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { TrendingUp } from "lucide-react";
 import {
   EditorSection,
@@ -12,26 +13,26 @@ import {
   AddButton,
   EditorPageHeader,
 } from "./AdminUI";
+import { getSocialImpactContent, updateSocialImpactContent, type SocialImpactData } from "@/lib/firebase/firestore";
 
-export default function SocialImpactEditor() {
-  const [pageHeading, setPageHeading] = useState("Every Number Hides a Human Story");
-  const [pageSubtitle, setPageSubtitle] = useState(
-    "Behind every statistic is a family that now eats better, earns more, and hopes further. Here is the evidence of our collective work."
-  );
+interface Props {
+  onSaveComplete?: () => void;
+}
 
-  const [stats, setStats] = useState([
-    { value: 12400, suffix: "+", label: "Farmers Assisted" },
-    { value: 340, suffix: "+", label: "Villages Reached" },
-    { value: 500, suffix: "+", label: "Women SHGs Formed" },
-    { value: 62, prefix: "₹", suffix: " Lakh+", label: "Additional Farmer Income" },
-  ]);
-
-  const [timeline, setTimeline] = useState([
+const defaultData: SocialImpactData = {
+  pageHeading: "Every Number Hides a Human Story",
+  pageSubtitle: "Behind every statistic is a family that now eats better, earns more, and hopes further. Here is the evidence of our collective work.",
+  stats: [
+    { value: 12400, suffix: "+", prefix: "", label: "Farmers Assisted" },
+    { value: 340, suffix: "+", prefix: "", label: "Villages Reached" },
+    { value: 500, suffix: "+", prefix: "", label: "Women SHGs Formed" },
+    { value: 62, suffix: " Lakh+", prefix: "₹", label: "Additional Farmer Income" },
+  ],
+  timeline: [
     {
       year: "2016",
       title: "Organic Farming Training Programme",
-      description:
-        "Launched our flagship organic farming initiative across 12 villages in Ludhiana district. Over 200 farmers transitioned to chemical-free cultivation, reducing input costs by 30% and improving soil health scores.",
+      description: "Launched our flagship organic farming initiative across 12 villages in Ludhiana district. Over 200 farmers transitioned to chemical-free cultivation, reducing input costs by 30% and improving soil health scores.",
       tag: "Agriculture",
       metric: "200 farmers • 30% cost reduction",
       imageUrl: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop",
@@ -39,8 +40,7 @@ export default function SocialImpactEditor() {
     {
       year: "2017",
       title: "Community Water Harvesting Network",
-      description:
-        "Built 48 farm ponds and 120 borewell recharge structures across Haryana and Punjab. The project has conserved an estimated 180 million litres of rainwater annually, combating drought conditions.",
+      description: "Built 48 farm ponds and 120 borewell recharge structures across Haryana and Punjab. The project has conserved an estimated 180 million litres of rainwater annually, combating drought conditions.",
       tag: "Environment",
       metric: "48 ponds • 180M litres saved yearly",
       imageUrl: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80&fit=crop",
@@ -48,8 +48,7 @@ export default function SocialImpactEditor() {
     {
       year: "2019",
       title: "Rural Women's Cooperative Network",
-      description:
-        "Established 150 Self-Help Groups across 3 states, collectively managing a revolving credit fund of ₹2.5 crore. Women-led micro-enterprises in food processing and handicrafts generated 1,200+ livelihoods.",
+      description: "Established 150 Self-Help Groups across 3 states, collectively managing a revolving credit fund of ₹2.5 crore. Women-led micro-enterprises in food processing and handicrafts generated 1,200+ livelihoods.",
       tag: "Empowerment",
       metric: "150 SHGs • ₹2.5 Cr credit fund",
       imageUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80&fit=crop",
@@ -57,8 +56,7 @@ export default function SocialImpactEditor() {
     {
       year: "2020",
       title: "Digital Literacy & AgriTech Adoption",
-      description:
-        "During COVID-19, deployed 280 solar-powered smart kiosks in villages enabling farmers to access e-mandi prices, weather alerts, and government scheme information.",
+      description: "During COVID-19, deployed 280 solar-powered smart kiosks in villages enabling farmers to access e-mandi prices, weather alerts, and government scheme information.",
       tag: "Technology",
       metric: "280 kiosks • 3,500 farmers trained",
       imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&fit=crop",
@@ -66,8 +64,7 @@ export default function SocialImpactEditor() {
     {
       year: "2022",
       title: "Tree Plantation & Carbon Sequestration Drive",
-      description:
-        "Partnered with Forest Department and 8,000 farming households to plant 2.1 million trees on farm boundaries and common land.",
+      description: "Partnered with Forest Department and 8,000 farming households to plant 2.1 million trees on farm boundaries and common land.",
       tag: "Environment",
       metric: "2.1 million trees • 8 states",
       imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80&fit=crop",
@@ -75,38 +72,116 @@ export default function SocialImpactEditor() {
     {
       year: "2024",
       title: "National Rural Excellence Award",
-      description:
-        "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development.",
+      description: "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development.",
       tag: "Recognition",
       metric: "Govt. of India Recognition",
       imageUrl: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
     },
-  ]);
+  ],
+  testimonialQuote: "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
+  testimonialTranslation: "AGRIGO changed my farm, changed my home, changed my dreams.",
+  testimonialAuthor: "Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab",
+};
 
-  const [testimonialQuote, setTestimonialQuote] = useState(
-    "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla."
-  );
-  const [testimonialTranslation, setTestimonialTranslation] = useState(
-    "AGRIGO changed my farm, changed my home, changed my dreams."
-  );
-  const [testimonialAuthor, setTestimonialAuthor] = useState(
-    "Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab"
-  );
+export default function SocialImpactEditor({ onSaveComplete }: Props) {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+  const [data, setData] = useState<SocialImpactData>(defaultData);
 
-  const updateStat = (i: number, key: string, val: string | number) =>
-    setStats((p) => p.map((s, idx) => (idx === i ? { ...s, [key]: val } : s)));
-  const addStat = () =>
-    setStats((p) => [...p, { value: 0, suffix: "+", label: "New Stat", prefix: "" }]);
-  const removeStat = (i: number) => setStats((p) => p.filter((_, idx) => idx !== i));
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const content = await getSocialImpactContent();
+        if (content?.data) {
+          setData(content.data);
+        }
+      } catch (error: unknown) {
+        console.error("Error loading social impact data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
-  const updateEntry = (i: number, key: string, val: string) =>
-    setTimeline((p) => p.map((e, idx) => (idx === i ? { ...e, [key]: val } : e)));
-  const addEntry = () =>
-    setTimeline((p) => [
-      ...p,
-      { year: "2025", title: "New Programme", description: "Programme description.", tag: "Agriculture", metric: "Impact metric", imageUrl: "" },
-    ]);
-  const removeEntry = (i: number) => setTimeline((p) => p.filter((_, idx) => idx !== i));
+  const updateStat = (i: number, key: string, val: string | number) => {
+    setData(prev => ({
+      ...prev,
+      stats: prev.stats.map((s, idx) => (idx === i ? { ...s, [key]: val } : s))
+    }));
+  };
+
+  const addStat = () => {
+    setData(prev => ({
+      ...prev,
+      stats: [...prev.stats, { value: 0, suffix: "+", prefix: "", label: "New Stat" }]
+    }));
+  };
+
+  const removeStat = (i: number) => {
+    setData(prev => ({
+      ...prev,
+      stats: prev.stats.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  const updateEntry = (i: number, key: string, val: string) => {
+    setData(prev => ({
+      ...prev,
+      timeline: prev.timeline.map((e, idx) => (idx === i ? { ...e, [key]: val } : e))
+    }));
+  };
+
+  const handleLocalImageUpload = (event: ChangeEvent<HTMLInputElement>, updateValue: (value: string) => void) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        updateValue(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
+  const addEntry = () => {
+    setData(prev => ({
+      ...prev,
+      timeline: [
+        ...prev.timeline,
+        { year: "2025", title: "New Programme", description: "Programme description.", tag: "Agriculture", metric: "Impact metric", imageUrl: "" }
+      ]
+    }));
+  };
+
+  const removeEntry = (i: number) => {
+    setData(prev => ({
+      ...prev,
+      timeline: prev.timeline.filter((_, idx) => idx !== i)
+    }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateSocialImpactContent({ data });
+      if (onSaveComplete) onSaveComplete();
+    } catch (error: unknown) {
+      console.error("Error saving social impact data:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-[#1B4332] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -116,25 +191,35 @@ export default function SocialImpactEditor() {
         description="Edit impact stats, programme timeline entries, and the testimonial section."
       />
 
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-6 py-2 bg-[#1B4332] text-white rounded-lg text-sm font-semibold hover:bg-[#2D6A4F] disabled:opacity-60 transition-colors"
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
+
       {/* Page Header */}
       <EditorSection title="Page Header">
         <Field label="Main Heading">
-          <TextInput value={pageHeading} onChange={setPageHeading} />
+          <TextInput value={data.pageHeading} onChange={(v) => setData(prev => ({ ...prev, pageHeading: v }))} />
         </Field>
         <Field label="Subtitle">
-          <Textarea value={pageSubtitle} onChange={setPageSubtitle} rows={2} />
+          <Textarea value={data.pageSubtitle} onChange={(v) => setData(prev => ({ ...prev, pageSubtitle: v }))} rows={2} />
         </Field>
       </EditorSection>
 
       {/* Stats Counters */}
       <EditorSection title="Impact Statistics" subtitle="Animated counter cards displayed below the page header">
         <div className="space-y-3">
-          {stats.map((stat, i) => (
-            <ItemCard key={i} index={i} total={stats.length} onRemove={() => removeStat(i)} label="Stat">
+          {data.stats.map((stat, i) => (
+            <ItemCard key={i} index={i} total={data.stats.length} onRemove={() => removeStat(i)} label="Stat">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <Field label="Prefix (e.g. ₹)">
                   <TextInput
-                    value={"prefix" in stat ? (stat as any).prefix : ""}
+                    value={stat.prefix}
                     onChange={(v) => updateStat(i, "prefix", v)}
                     placeholder="₹"
                   />
@@ -162,8 +247,8 @@ export default function SocialImpactEditor() {
       {/* Timeline */}
       <EditorSection title="Programme Timeline" subtitle="Alternating feature cards showing major initiatives">
         <div className="space-y-4">
-          {timeline.map((entry, i) => (
-            <ItemCard key={i} index={i} total={timeline.length} onRemove={() => removeEntry(i)} label={`Entry ${i + 1}`}>
+          {data.timeline.map((entry, i) => (
+            <ItemCard key={i} index={i} total={data.timeline.length} onRemove={() => removeEntry(i)} label={`Entry ${i + 1}`}>
               <TwoCol>
                 <Field label="Year">
                   <TextInput value={entry.year} onChange={(v) => updateEntry(i, "year", v)} placeholder="2022" />
@@ -183,7 +268,18 @@ export default function SocialImpactEditor() {
                   <TextInput value={entry.metric} onChange={(v) => updateEntry(i, "metric", v)} placeholder="200 farmers • 30% cost reduction" />
                 </Field>
                 <Field label="Image URL">
-                  <TextInput value={entry.imageUrl} onChange={(v) => updateEntry(i, "imageUrl", v)} placeholder="https://..." />
+                  <div className="flex gap-2 items-start">
+                    <TextInput value={entry.imageUrl} onChange={(v) => updateEntry(i, "imageUrl", v)} placeholder="https://..." />
+                    <label className="px-3.5 py-2.5 bg-[#EDF5EF] border border-[#D0E6D8] rounded-lg text-[#1B4332] text-xs font-semibold whitespace-nowrap cursor-pointer hover:bg-[#E4F0E8] transition-colors">
+                      Upload
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(event) => handleLocalImageUpload(event, (value) => updateEntry(i, "imageUrl", value))}
+                      />
+                    </label>
+                  </div>
                 </Field>
               </TwoCol>
               {entry.imageUrl && (
@@ -198,13 +294,13 @@ export default function SocialImpactEditor() {
       {/* Testimonial */}
       <EditorSection title="Testimonial Quote" subtitle="The full-width dark green testimonial block">
         <Field label="Quote (in local language)">
-          <Textarea value={testimonialQuote} onChange={setTestimonialQuote} rows={2} />
+          <Textarea value={data.testimonialQuote} onChange={(v) => setData(prev => ({ ...prev, testimonialQuote: v }))} rows={2} />
         </Field>
         <Field label="English Translation">
-          <TextInput value={testimonialTranslation} onChange={setTestimonialTranslation} />
+          <TextInput value={data.testimonialTranslation} onChange={(v) => setData(prev => ({ ...prev, testimonialTranslation: v }))} />
         </Field>
         <Field label="Attribution (Name, Location)">
-          <TextInput value={testimonialAuthor} onChange={setTestimonialAuthor} />
+          <TextInput value={data.testimonialAuthor} onChange={(v) => setData(prev => ({ ...prev, testimonialAuthor: v }))} />
         </Field>
       </EditorSection>
     </div>
