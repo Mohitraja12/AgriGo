@@ -59,8 +59,8 @@ const defaultSlides: HeroSlideView[] = [
     image: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=1600&q=80&fit=crop",
     tag: "Community Development",
     title: "Building Villages,\nStrengthening Bonds",
-    description: "From self-help groups to cooperative networks — AGRIGO weaves communities together through education, resources, and shared vision.",
-    cta: { label: "About AGRIGO", href: "/about" },
+    description: "From self-help groups to cooperative networks — Soilx weaves communities together through education, resources, and shared vision.",
+    cta: { label: "About Soilx", href: "/about" },
     accent: "#D4A853",
   },
   {
@@ -120,10 +120,10 @@ export default function HomePage() {
   const [stats, setStats] = useState<StatView[]>(defaultStats);
   const [pillars, setPillars] = useState<PillarView[]>(defaultPillars);
   const [introHeading, setIntroHeading] = useState<string>("Agriculture as a tool for dignity and prosperity");
-  const [introPara1, setIntroPara1] = useState<string>("AGRIGO is a grassroots organisation working at the intersection of sustainable agriculture and community development. Founded in 2015, we have grown from a small cooperative in Punjab to a multi-state movement empowering over 12,000 farmers and their families.");
+  const [introPara1, setIntroPara1] = useState<string>("Soilx is a grassroots organisation working at the intersection of sustainable agriculture and community development. Founded in 2015, we have grown from a small cooperative in Punjab to a multi-state movement empowering over 12,000 farmers and their families.");
   const [introPara2, setIntroPara2] = useState<string>("We believe that when farmers thrive, villages thrive — and when villages thrive, the nation grows. Our integrated approach combines technical assistance, financial inclusion, market linkages, and deep community trust.");
   const [ctaHeading, setCtaHeading] = useState<string>("Help us plant seeds of change across India");
-  const [ctaBody, setCtaBody] = useState<string>("Whether you are a donor, a corporate partner, a volunteer, or a farmer seeking support — AGRIGO has a place for you in this movement.");
+  const [ctaBody, setCtaBody] = useState<string>("Whether you are a donor, a corporate partner, a volunteer, or a farmer seeking support — Soilx has a place for you in this movement.");
 
   // Slider state
   const [current, setCurrent] = useState<number>(0);
@@ -433,7 +433,7 @@ export default function HomePage() {
               What We Stand For
             </h2>
             <p className="text-[#6B6B5E] mt-3 max-w-xl mx-auto">
-              Four interconnected pillars form the foundation of everything AGRIGO
+              Four interconnected pillars form the foundation of everything Soilx
               does — from the field to the community hall.
             </p>
           </div>

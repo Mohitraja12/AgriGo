@@ -25,24 +25,24 @@ const defaultData: ContactData = {
   offices: [
     {
       name: "Headquarters — Punjab",
-      address: "AGRIGO Organisation, Block C, Krishi Nagar, Sector 12, Ludhiana, Punjab — 141001",
+      address: "Soilx Organisation, Block C, Krishi Nagar, Sector 12, Ludhiana, Punjab — 141001",
       phone: "+91 98765 43210",
-      email: "info@agrigo.org",
+      email: "info@soilx.org",
       hours: "Mon – Sat: 9:00 AM – 6:00 PM",
     },
     {
       name: "Field Office — Haryana",
       address: "Village Panchayat Bhawan, NH-44 Bypass, Ambala, Haryana — 134003",
       phone: "+91 98765 43211",
-      email: "haryana@agrigo.org",
+      email: "haryana@soilx.org",
       hours: "Mon – Fri: 9:00 AM – 5:00 PM",
     },
   ],
   departments: [
-    { label: "General Enquiries", email: "info@agrigo.org" },
-    { label: "Farmer Support", email: "support@agrigo.org" },
-    { label: "Partnerships & CSR", email: "partners@agrigo.org" },
-    { label: "Media & Press", email: "media@agrigo.org" },
+    { label: "General Enquiries", email: "info@soilx.org" },
+    { label: "Farmer Support", email: "support@soilx.org" },
+    { label: "Partnerships & CSR", email: "partners@soilx.org" },
+    { label: "Media & Press", email: "media@soilx.org" },
   ],
   socialLinks: [
     { label: "Facebook", url: "#" },
@@ -106,7 +106,7 @@ export default function ContactEditor({ onSaveComplete }: Props) {
   const addDepartment = () => {
     setData(prev => ({
       ...prev,
-      departments: [...prev.departments, { label: "New Department", email: "email@agrigo.org" }]
+      departments: [...prev.departments, { label: "New Department", email: "email@soilx.org" }]
     }));
   };
 

@@ -72,14 +72,14 @@ const defaultData: SocialImpactData = {
     {
       year: "2024",
       title: "National Rural Excellence Award",
-      description: "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development.",
+      description: "Soilx was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development.",
       tag: "Recognition",
       metric: "Govt. of India Recognition",
       imageUrl: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
     },
   ],
-  testimonialQuote: "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
-  testimonialTranslation: "AGRIGO changed my farm, changed my home, changed my dreams.",
+  testimonialQuote: "Soilx ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
+  testimonialTranslation: "Soilx changed my farm, changed my home, changed my dreams.",
   testimonialAuthor: "Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab",
 };
 

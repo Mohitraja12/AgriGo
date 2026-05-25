@@ -85,7 +85,7 @@ export default function AdminDashboard({ onNavigate }: Props) {
         <div className="relative z-10">
           <p className="text-[#52B788] text-xs uppercase tracking-widest mb-1 font-medium">Welcome back</p>
           <h1 className="text-xl font-bold text-white mb-1" style={{ fontFamily: "Georgia, serif" }}>
-            AGRIGO Admin Dashboard
+            Soilx Admin Dashboard
           </h1>
           <p className="text-white/50 text-sm">
             Manage all website content from this panel. Click any section below to begin editing.

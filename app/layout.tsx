@@ -18,9 +18,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "AGRIGO — Agriculture, Community & Social Impact",
+  title: "Soilx — Agriculture, Community & Social Impact",
   description:
-    "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+    "Soilx is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
 };
 
 export default function RootLayout({

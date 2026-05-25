@@ -21,7 +21,7 @@ interface Props {
 
 const defaultData: AboutData = {
   pageHeading: "Rooted in Purpose, Growing with Purpose",
-  pageSubtitle: "Since 2015, AGRIGO has been a living testament to what happens when communities are trusted, supported, and connected.",
+  pageSubtitle: "Since 2015, Soilx has been a living testament to what happens when communities are trusted, supported, and connected.",
   missionHeading: "To build a world where every farmer is food-secure, financially independent, and socially dignified.",
   missionBody: "We pursue this mission by integrating sustainable agricultural practices, inclusive financial services, market access programs, and community-led governance into a single, cohesive development model that scales from one farm to thousands of villages.",
   missionBullets: ["Sustainable Farming Models", "Financial Inclusion", "Market Linkages", "Policy Advocacy"],
@@ -35,7 +35,7 @@ const defaultData: AboutData = {
     { title: "Innovation & Learning", desc: "Combining traditional farming wisdom with modern research to develop solutions that are practical and scalable." },
   ],
   milestones: [
-    { year: "2015", event: "AGRIGO founded in Ludhiana, Punjab with a 12-farmer cooperative." },
+    { year: "2015", event: "Soilx founded in Ludhiana, Punjab with a 12-farmer cooperative." },
     { year: "2016", event: "Launched first organic farming training programme; 200 farmers enrolled." },
     { year: "2017", event: "Expanded to Haryana and Himachal Pradesh. Established mobile health camps." },
     { year: "2019", event: "Crossed 2,000 farmer milestone. Received National Rural Development Award." },

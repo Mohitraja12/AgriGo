@@ -32,8 +32,8 @@ const defaultData: HomepageData = {
     {
       tag: "Community Development",
       title: "Building Villages,\nStrengthening Bonds",
-      description: "From self-help groups to cooperative networks — AGRIGO weaves communities together through education, resources, and shared vision.",
-      ctaLabel: "About AGRIGO",
+      description: "From self-help groups to cooperative networks — Soilx weaves communities together through education, resources, and shared vision.",
+      ctaLabel: "About Soilx",
       ctaHref: "/about",
       imageUrl: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=1600&q=80&fit=crop",
     },
@@ -71,10 +71,10 @@ const defaultData: HomepageData = {
     },
   ],
   introHeading: "Agriculture as a tool for dignity and prosperity",
-  introPara1: "AGRIGO is a grassroots organisation working at the intersection of sustainable agriculture and community development. Founded in 2015, we have grown from a small cooperative in Punjab to a multi-state movement empowering over 12,000 farmers and their families.",
+  introPara1: "Soilx is a grassroots organisation working at the intersection of sustainable agriculture and community development. Founded in 2015, we have grown from a small cooperative in Punjab to a multi-state movement empowering over 12,000 farmers and their families.",
   introPara2: "We believe that when farmers thrive, villages thrive — and when villages thrive, the nation grows. Our integrated approach combines technical assistance, financial inclusion, market linkages, and deep community trust.",
   ctaHeading: "Help us plant seeds of change across India",
-  ctaBody: "Whether you are a donor, a corporate partner, a volunteer, or a farmer seeking support — AGRIGO has a place for you in this movement.",
+  ctaBody: "Whether you are a donor, a corporate partner, a volunteer, or a farmer seeking support — Soilx has a place for you in this movement.",
 };
 
 export default function HomepageEditor({ onSaveComplete }: Props) {
@@ -204,7 +204,7 @@ export default function HomepageEditor({ onSaveComplete }: Props) {
       <EditorPageHeader
         icon={Home}
         title="Homepage Editor"
-        description="Edit all content sections displayed on the AGRIGO homepage."
+        description="Edit all content sections displayed on the Soilx homepage."
       />
 
       {/* Save Button at Top */}

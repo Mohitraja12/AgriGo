@@ -85,14 +85,14 @@ const defaultContent: SocialImpactData = {
       year: "2024",
       title: "National Rural Excellence Award",
       description:
-        "AGRIGO was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development spanning agriculture, livelihoods, and ecology.",
+        "Soilx was honoured with the National Rural Excellence Award by the Ministry of Rural Development for demonstrating an innovative, scalable model of integrated rural development spanning agriculture, livelihoods, and ecology.",
       imageUrl: "https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&q=80&fit=crop",
       tag: "Recognition",
       metric: "Govt. of India Recognition",
     },
   ],
-  testimonialQuote: "AGRIGO ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
-  testimonialTranslation: "AGRIGO changed my farm, changed my home, changed my dreams.",
+  testimonialQuote: "Soilx ne mere khet ko badla, mere ghar ko badla, mere sapno ko badla.",
+  testimonialTranslation: "Soilx changed my farm, changed my home, changed my dreams.",
   testimonialAuthor: "Gurpreet Kaur — Farmer, Fatehgarh Sahib, Punjab",
 };
 
@@ -335,7 +335,7 @@ export default function SocialImpactPage() {
             Want to contribute to the next milestone?
           </h2>
           <p className="text-[#6B6B5E] mb-8">
-            Partner with AGRIGO as a donor, corporate CSR partner, volunteer, or knowledge expert.
+            Partner with Soilx as a donor, corporate CSR partner, volunteer, or knowledge expert.
           </p>
           <Link
             href="/contact"

@@ -60,7 +60,7 @@ function SidebarContent({
           {sidebarOpen && (
             <div>
               <p className="text-[#1B4332] font-bold text-sm tracking-widest" style={{ fontFamily: "Georgia, serif" }}>
-                AGRIGO
+                Soilx
               </p>
               <p className="text-[#6B8F71] text-[10px] tracking-wider uppercase">Admin Panel</p>
             </div>

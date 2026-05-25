@@ -20,10 +20,10 @@ interface Props {
 }
 
 const defaultData: SiteSettingsData = {
-  orgName: "AGRIGO",
+  orgName: "Soilx",
   orgTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures.",
   orgEstYear: "2015",
-  orgEmail: "info@agrigo.org",
+  orgEmail: "info@soilx.org",
   orgPhone: "+91 12345 67890",
   navLinks: [
     { label: "Home", href: "/" },
@@ -33,17 +33,17 @@ const defaultData: SiteSettingsData = {
     { label: "Contact Us", href: "/contact" },
   ],
   footerTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.",
-  footerAddress: "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
+  footerAddress: "Soilx Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
   footerPhone1: "+91 12345 67890",
   footerPhone2: "+91 12345 67891",
-  footerEmail1: "info@agrigo.org",
-  footerEmail2: "support@agrigo.org",
+  footerEmail1: "info@soilx.org",
+  footerEmail2: "support@soilx.org",
   footerSocial: [
-    { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
-    { platform: "Instagram", handle: "@agrigo.in", url: "#" },
-    { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
-    { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
-    { platform: "YouTube", handle: "AGRIGO Channel", url: "#" },
+    { platform: "Facebook", handle: "@SoilxOfficial", url: "#" },
+    { platform: "Instagram", handle: "@soilx.in", url: "#" },
+    { platform: "Twitter / X", handle: "@SoilxIndia", url: "#" },
+    { platform: "LinkedIn", handle: "Soilx Org", url: "#" },
+    { platform: "YouTube", handle: "Soilx Channel", url: "#" },
   ],
   legalLinks: [
     { label: "Privacy Policy", href: "#" },
@@ -51,9 +51,9 @@ const defaultData: SiteSettingsData = {
     { label: "Sitemap", href: "#" },
   ],
   footerCtaHeading: "Ready to make an impact together?",
-  footerCtaSubtitle: "Partner with AGRIGO to transform agriculture and empower communities.",
-  siteTitle: "AGRIGO — Agriculture, Community & Social Impact",
-  metaDescription: "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+  footerCtaSubtitle: "Partner with Soilx to transform agriculture and empower communities.",
+  siteTitle: "Soilx — Agriculture, Community & Social Impact",
+  metaDescription: "Soilx is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
 };
 
 export default function SiteSettingsEditor({ onSaveComplete }: Props) {
@@ -186,7 +186,7 @@ export default function SiteSettingsEditor({ onSaveComplete }: Props) {
       <EditorSection title="Organisation Information" subtitle="Core details used throughout the site">
         <TwoCol>
           <Field label="Organisation Name">
-            <TextInput value={data.orgName} onChange={(v) => setData(prev => ({ ...prev, orgName: v }))} placeholder="AGRIGO" />
+            <TextInput value={data.orgName} onChange={(v) => setData(prev => ({ ...prev, orgName: v }))} placeholder="Soilx" />
           </Field>
           <Field label="Established Year">
             <TextInput value={data.orgEstYear} onChange={(v) => setData(prev => ({ ...prev, orgEstYear: v }))} placeholder="2015" />
@@ -197,7 +197,7 @@ export default function SiteSettingsEditor({ onSaveComplete }: Props) {
         </Field>
         <TwoCol>
           <Field label="Primary Email">
-            <TextInput value={data.orgEmail} onChange={(v) => setData(prev => ({ ...prev, orgEmail: v }))} placeholder="info@agrigo.org" />
+            <TextInput value={data.orgEmail} onChange={(v) => setData(prev => ({ ...prev, orgEmail: v }))} placeholder="info@soilx.org" />
           </Field>
           <Field label="Primary Phone">
             <TextInput value={data.orgPhone} onChange={(v) => setData(prev => ({ ...prev, orgPhone: v }))} placeholder="+91 12345 67890" />

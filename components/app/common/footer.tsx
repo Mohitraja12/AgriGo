@@ -22,24 +22,24 @@ const quickLinks = [
 ];
 
 const defaultSiteSettings: SiteSettingsData = {
-  orgName: "AGRIGO",
+  orgName: "Soilx",
   orgTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures.",
   orgEstYear: "2015",
-  orgEmail: "info@agrigo.org",
+  orgEmail: "info@soilx.org",
   orgPhone: "+91 12345 67890",
   navLinks: quickLinks,
   footerTagline: "Rooted in purpose. Growing communities. Cultivating sustainable futures through agriculture, education, and social innovation.",
-  footerAddress: "AGRIGO Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
+  footerAddress: "Soilx Organisation,\nSector 12, Krishi Nagar,\nPunjab — 143001, India",
   footerPhone1: "+91 12345 67890",
   footerPhone2: "+91 12345 67891",
-  footerEmail1: "info@agrigo.org",
-  footerEmail2: "support@agrigo.org",
+  footerEmail1: "info@soilx.org",
+  footerEmail2: "support@soilx.org",
   footerSocial: [
-    { platform: "Facebook", handle: "@AgrigoOfficial", url: "#" },
-    { platform: "Instagram", handle: "@agrigo.in", url: "#" },
-    { platform: "Twitter / X", handle: "@AgrigoIndia", url: "#" },
-    { platform: "LinkedIn", handle: "AGRIGO Org", url: "#" },
-    { platform: "YouTube", handle: "AGRIGO Channel", url: "#" },
+    { platform: "Facebook", handle: "@SoilxOfficial", url: "#" },
+    { platform: "Instagram", handle: "@soilx.in", url: "#" },
+    { platform: "Twitter / X", handle: "@SoilxIndia", url: "#" },
+    { platform: "LinkedIn", handle: "Soilx Org", url: "#" },
+    { platform: "YouTube", handle: "Soilx Channel", url: "#" },
   ],
   legalLinks: [
     { label: "Privacy Policy", href: "#" },
@@ -47,9 +47,9 @@ const defaultSiteSettings: SiteSettingsData = {
     { label: "Sitemap", href: "#" },
   ],
   footerCtaHeading: "Ready to make an impact together?",
-  footerCtaSubtitle: "Partner with AGRIGO to transform agriculture and empower communities.",
-  siteTitle: "AGRIGO — Agriculture, Community & Social Impact",
-  metaDescription: "AGRIGO is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
+  footerCtaSubtitle: "Partner with Soilx to transform agriculture and empower communities.",
+  siteTitle: "Soilx — Agriculture, Community & Social Impact",
+  metaDescription: "Soilx is a purpose-driven organization focused on sustainable agriculture, community development, and measurable social impact across rural India.",
 };
 
 export default function Footer() {
@@ -108,7 +108,7 @@ export default function Footer() {
               className="text-2xl font-bold tracking-widest text-[#F7F4EE]"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
-              AGRIGO
+              Soilx
             </span>
           </div>
           <p className="text-sm text-[#F7F4EE]/60 leading-relaxed">
@@ -206,7 +206,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10 max-w-7xl mx-auto px-6 lg:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-[#F7F4EE]/40">
-        <p>© {new Date().getFullYear()} AGRIGO Organisation. All Rights Reserved.</p>
+        <p>© {new Date().getFullYear()} Soilx Organisation. All Rights Reserved.</p>
         <div className="flex gap-4">
           {legalLinks.map((link) => (
             <a key={link.label} href={link.href} className="hover:text-[#F7F4EE] transition-colors">{link.label}</a>

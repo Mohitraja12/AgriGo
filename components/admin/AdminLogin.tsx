@@ -62,7 +62,7 @@ export default function AdminLogin({ onLogin }: Props) {
               className="text-2xl font-bold text-[#1B4332] tracking-widest"
               style={{ fontFamily: "var(--font-playfair, Georgia, serif)" }}
             >
-              AGRIGO
+              Soilx
             </h1>
             <p className="text-[#6B8F71] text-sm mt-1">Admin Control Panel</p>
           </div>
@@ -94,7 +94,7 @@ export default function AdminLogin({ onLogin }: Props) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@agrigo.org"
+                  placeholder="admin@soilx.org"
                   required
                   className="w-full pl-11 pr-4 py-3.5 bg-[#F7FAF8] border border-[#D0E6D8] rounded-xl text-[#1C1C1C] placeholder-[#A0BEA8] text-sm focus:outline-none focus:border-[#2D6A4F] focus:ring-2 focus:ring-[#2D6A4F]/10 transition-all"
                 />
@@ -148,7 +148,7 @@ export default function AdminLogin({ onLogin }: Props) {
           </form>
 
           <p className="text-center text-xs text-[#A0BEA8] mt-6">
-            Protected area — AGRIGO internal use only
+            Protected area — Soilx internal use only
           </p>
         </div>
       </div>

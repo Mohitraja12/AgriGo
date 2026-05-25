@@ -22,7 +22,7 @@ const categoryOptions = ["Farming", "Community", "Events", "Nature", "Awards"];
 
 const defaultData: GalleryData = {
   pageHeading: "Our Work in Pictures",
-  pageSubtitle: "A curated visual journey through the farms, villages, events, and lives that AGRIGO has touched over a decade of work.",
+  pageSubtitle: "A curated visual journey through the farms, villages, events, and lives that Soilx has touched over a decade of work.",
   images: [
     { src: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80&fit=crop", caption: "Wheat fields of Punjab at golden hour", category: "Farming" },
     { src: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80&fit=crop", caption: "Organic training workshop in Ludhiana", category: "Community" },
